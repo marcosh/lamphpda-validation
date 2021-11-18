@@ -1,0 +1,29 @@
+{
+  "name": "marcosh/lamphpda-validation",
+  "description": "A validation library using Either from marcosh/lamphpda",
+  "version": "0.1.0",
+  "type": "library",
+  "license": "Hippocratic-2.1",
+  "authors": [
+    {
+      "name": "Marco Perone",
+      "email": "pasafama@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^7.4|^8.0",
+    "roave/you-are-using-it-wrong": "^1.8",
+    "marcosh/lamphpda": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "Marcosh\\LamPHPda\\Validation\\": "src/"
+    }
+  },
+  "require-dev": {
+    "maglnet/composer-require-checker": "^3.5",
+    "kahlan/kahlan": "^5.1",
+    "squizlabs/php_codesniffer": "^3.6",
+    "vimeo/psalm": "4.12"
+  }
+}
