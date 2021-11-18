@@ -73,4 +73,30 @@ final class Validation
             fn($_) => Either::left($e)
         );
     }
+
+    // BASIC VALIDATORS
+
+    /**
+     * @template C
+     * @template F
+     * @param F $e
+     * @return Validation<C, F, array>
+     */
+    public static function isArray($e): self
+    {
+        return new self(
+            /**
+             * @param C $a
+             */
+            function ($a) use ($e) {
+                if (!is_array($a)) {
+                    /** @var Either<F, array> */
+                    return Either::left($e);
+                }
+
+                /** @var Either<F, array> */
+                return Either::right($a);
+            }
+        );
+    }
 }
