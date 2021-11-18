@@ -41,4 +41,36 @@ final class Validation
     {
         return ($this->validation)($a);
     }
+
+    /**
+     * @template C
+     * @template F
+     * @return Validation<C, F, C>
+     */
+    public static function valid(): self
+    {
+        return new self(
+            /**
+             * @param C $a
+             */
+            fn($a) => Either::right($a)
+        );
+    }
+
+    /**
+     * @template C
+     * @template F
+     * @template D
+     * @param F $e
+     * @return Validation<C, F, D>
+     */
+    public static function invalid($e): self
+    {
+        return new self(
+            /**
+             * @param C $_
+             */
+            fn($_) => Either::left($e)
+        );
+    }
 }

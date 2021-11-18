@@ -12,12 +12,17 @@
   ],
   "require": {
     "php": "^7.4|^8.0",
-    "roave/you-are-using-it-wrong": "^1.8",
-    "marcosh/lamphpda": "dev-master"
+    "marcosh/lamphpda": "dev-master",
+    "giorgiosironi/eris": "^0.12.1"
   },
   "autoload": {
     "psr-4": {
       "Marcosh\\LamPHPda\\Validation\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Marcosh\\LamPHPda\\ValidationSpec\\": "spec/"
     }
   },
   "require-dev": {

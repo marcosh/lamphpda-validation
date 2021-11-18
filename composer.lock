@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cd3366d63679bc2ae37289b71e9a5bfd",
+    "content-hash": "637bf364576377e14332504ae4589221",
     "packages": [
         {
             "name": "amphp/amp",
@@ -419,6 +419,67 @@
                 "source": "https://github.com/felixfbecker/php-language-server-protocol/tree/v1.5.0"
             },
             "time": "2020-10-23T13:55:30+00:00"
+        },
+        {
+            "name": "giorgiosironi/eris",
+            "version": "0.12.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/giorgiosironi/eris.git",
+                "reference": "959c41bc043cf3801fe4f6aeacc1e85f3edc8414"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/giorgiosironi/eris/zipball/959c41bc043cf3801fe4f6aeacc1e85f3edc8414",
+                "reference": "959c41bc043cf3801fe4f6aeacc1e85f3edc8414",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.0",
+                "icomefromthenet/reverse-regex": "v0.0.6.3",
+                "phpunit/phpunit": ">=4.1 <8",
+                "sebastian/comparator": ">=1.2.4"
+            },
+            "suggest": {
+                "icomefromthenet/reverse-regex": "v0.0.6.3 for the regex() Generator",
+                "phpunit/phpunit": "Standard way to run generated test cases"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Eris\\": "src/"
+                },
+                "files": [
+                    "src/Generator/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Giorgio Sironi",
+                    "email": "info@giorgiosironi.com"
+                },
+                {
+                    "name": "Mirko Bonadei",
+                    "email": "mirko.bonadei@gmail.com"
+                },
+                {
+                    "name": "Gabriele Lana",
+                    "email": "gabriele.lana@gmail.com"
+                }
+            ],
+            "description": "PHP library for property-based testing. Integrates with PHPUnit.",
+            "support": {
+                "issues": "https://github.com/giorgiosironi/eris/issues",
+                "source": "https://github.com/giorgiosironi/eris/tree/0.12.1"
+            },
+            "time": "2021-07-27T18:16:33+00:00"
         },
         {
             "name": "marcosh/lamphpda",
@@ -2224,7 +2285,7 @@
         "marcosh/lamphpda": 20
     },
     "prefer-stable": false,
-    "prefer-lowest": true,
+    "prefer-lowest": false,
     "platform": {
         "php": "^7.4|^8.0"
     },
