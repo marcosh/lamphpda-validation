@@ -79,24 +79,49 @@ final class Validation
     /**
      * @template C
      * @template F
+     * @param callable(C): bool $f
      * @param F $e
-     * @return Validation<C, F, array>
+     * @return Validation<C, F, C>
      */
-    public static function isArray($e): self
+    public static function satisfies(callable $f, $e): self
     {
         return new self(
             /**
              * @param C $a
              */
-            function ($a) use ($e) {
-                if (!is_array($a)) {
-                    /** @var Either<F, array> */
+            function ($a) use ($e, $f) {
+                if (!$f($a)) {
+                    /** @var Either<F, C> */
                     return Either::left($e);
                 }
 
-                /** @var Either<F, array> */
+                /** @var Either<F, C> */
                 return Either::right($a);
             }
         );
+    }
+
+    /**
+     * @template C
+     * @template F
+     * @param F $e
+     * @return Validation<C, F, array>
+     */
+    public static function isArray($e): self
+    {
+        /** @var Validation<C, F, array> */
+        return self::satisfies('is_array', $e);
+    }
+
+    /**
+     * @template C
+     * @template F
+     * @param F $e
+     * @return Validation<C, F, string>
+     */
+    public static function isString($e): self
+    {
+        /** @var Validation<C, F, string> */
+        return self::satisfies('is_string', $e);
     }
 }
