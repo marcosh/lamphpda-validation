@@ -16,7 +16,7 @@ $test = new ValidationTest();
 
 describe('Validation', function () use ($test) {
 
-    describe('Basic combinators', function () use ($test) {
+    describe('Trivial combinators', function () use ($test) {
 
         describe('valid', function () use ($test) {
             it('always succeeds', function () use ($test) {
@@ -37,6 +37,35 @@ describe('Validation', function () use ($test) {
                 )->then(
                     function (int $i) {
                         expect(V::invalid('nope')->validate($i))->toEqual(Either::left('nope'));
+                    }
+                );
+            });
+        });
+    });
+
+    describe('Basic combinators', function () use ($test) {
+
+        describe('hasKey', function () use ($test) {
+            it('succeeds if the array has the key', function () use ($test) {
+                $test->forAll(
+                    new SequenceGenerator(new IntegerGenerator())
+                )->then(
+                    function (array $a) {
+                        $a[42] = 42;
+
+                        expect(V::hasKey(42, 'nope')->validate($a))->toEqual(Either::right($a));
+                    }
+                );
+            });
+
+            it('fails if the array does not have the key', function () use ($test) {
+                $test->forAll(
+                    new SequenceGenerator(new IntegerGenerator())
+                )->then(
+                    function (array $a) {
+                        unset($a[3]);
+
+                        expect(V::hasKey(3, 'nope')->validate($a))->toEqual(Either::left('nope'));
                     }
                 );
             });

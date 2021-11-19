@@ -48,6 +48,8 @@ final class Validation
         return ($this->validation)($a);
     }
 
+    // TRIVIAL COMBINATORS
+
     /**
      * @template C
      * @template F
@@ -85,6 +87,24 @@ final class Validation
     }
 
     // BASIC VALIDATORS
+
+    /**
+     * @template C of array
+     * @template F
+     * @param array-key $key
+     * @param F $e
+     * @return Validation<C, F, C>
+     */
+    public static function hasKey($key, $e): self
+    {
+        return self::satisfies(
+            /**
+             * @param C $a
+             */
+            fn($a) => array_key_exists($key, $a),
+            $e
+        );
+    }
 
     /**
      * @template C
