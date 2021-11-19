@@ -7,6 +7,9 @@ namespace Marcosh\LamPHPda\Validation;
 use Marcosh\LamPHPda\Either;
 use Marcosh\LamPHPda\Traversable;
 use Marcosh\LamPHPda\Typeclass\Monoid;
+use Marcosh\LamPHPda\Typeclass\Semigroup;
+use Marcosh\LamPHPda\Validation\Instances\Validation\AllMonoid;
+use Marcosh\LamPHPda\Validation\Instances\Validation\AnyMonoid;
 use Marcosh\LamPHPda\Validation\Instances\ValidationSemigroup;
 
 /**
@@ -149,5 +152,37 @@ final class Validation
             [$validationMonoid, 'append'],
             $validationMonoid->mempty()
         );
+    }
+
+    /**
+     * @template C
+     * @template F
+     * @template D
+     * @param Semigroup<F> $eSemigroup
+     * @param Validation<C, F, D>[] $validations
+     * @return Validation<C, F, D>
+     */
+    public static function all(Semigroup $eSemigroup, array $validations): self
+    {
+        /** @var AllMonoid<C, F, D> $allMonoid */
+        $allMonoid = new AllMonoid($eSemigroup);
+
+        return self::fold($allMonoid, $validations);
+    }
+
+    /**
+     * @template C
+     * @template F
+     * @template D
+     * @param Monoid<F> $eMonoid
+     * @param Validation<C, F, D>[] $validations
+     * @return Validation<C, F, D>
+     */
+    public static function any(Monoid $eMonoid, array $validations): self
+    {
+        /** @var AnyMonoid<C, F, D> $anyMonoid */
+        $anyMonoid = new AnyMonoid($eMonoid);
+
+        return self::fold($anyMonoid, $validations);
     }
 }
