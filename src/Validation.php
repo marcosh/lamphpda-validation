@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Marcosh\LamPHPda\Validation;
 
 use Marcosh\LamPHPda\Either;
+use Marcosh\LamPHPda\Traversable;
+use Marcosh\LamPHPda\Typeclass\Monoid;
+use Marcosh\LamPHPda\Validation\Instances\ValidationSemigroup;
 
 /**
  * a validation is nothing else that a function from A to Either<E, B>
@@ -23,7 +26,7 @@ final class Validation
     /**
      * @param callable(A): Either<E, B> $validation
      */
-    private function __construct(callable $validation)
+    public function __construct(callable $validation)
     {
         $this->validation = $validation;
     }
@@ -46,6 +49,8 @@ final class Validation
      * @template C
      * @template F
      * @return Validation<C, F, C>
+     *
+     * @psalm-pure
      */
     public static function valid(): self
     {
@@ -63,6 +68,8 @@ final class Validation
      * @template D
      * @param F $e
      * @return Validation<C, F, D>
+     *
+     * @psalm-pure
      */
     public static function invalid($e): self
     {
@@ -89,7 +96,7 @@ final class Validation
             /**
              * @param C $a
              */
-            function ($a) use ($e, $f) {
+            static function ($a) use ($e, $f) {
                 if (!$f($a)) {
                     /** @var Either<F, C> */
                     return Either::left($e);
@@ -105,11 +112,11 @@ final class Validation
      * @template C
      * @template F
      * @param F $e
-     * @return Validation<C, F, array>
+     * @return (C is array ? Validation<C, F, C> : Validation<C, F, array>)
      */
     public static function isArray($e): self
     {
-        /** @var Validation<C, F, array> */
+        /** @var (C is array ? Validation<C, F, C> : Validation<C, F, array>) */
         return self::satisfies('is_array', $e);
     }
 
@@ -117,11 +124,30 @@ final class Validation
      * @template C
      * @template F
      * @param F $e
-     * @return Validation<C, F, string>
+     * @return (C is string ? Validation<C, F, C> : Validation<C, F, string>)
      */
     public static function isString($e): self
     {
-        /** @var Validation<C, F, string> */
+        /** @var (C is string ? Validation<C, F, C> : Validation<C, F, string>) */
         return self::satisfies('is_string', $e);
+    }
+
+    // COMBINATORS
+
+    /**
+     * @template C
+     * @template F
+     * @template D
+     * @param Monoid<Validation<C, F, D>> $validationMonoid
+     * @param Validation<C, F, D>[] $validations
+     * @return Validation<C, F, D>
+     */
+    public static function fold(Monoid $validationMonoid, array $validations): self
+    {
+        /** @var Validation<C, F, D> */
+        return Traversable::fromArray($validations)->foldr(
+            [$validationMonoid, 'append'],
+            $validationMonoid->mempty()
+        );
     }
 }

@@ -487,12 +487,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/marcosh/lamphpda.git",
-                "reference": "d09bb3fb6d071837bbe596ca6a6b20fe6378ae53"
+                "reference": "5d5e937ac2fcead6ec54cbff751f0158eb80d568"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/marcosh/lamphpda/zipball/d09bb3fb6d071837bbe596ca6a6b20fe6378ae53",
-                "reference": "d09bb3fb6d071837bbe596ca6a6b20fe6378ae53",
+                "url": "https://api.github.com/repos/marcosh/lamphpda/zipball/5d5e937ac2fcead6ec54cbff751f0158eb80d568",
+                "reference": "5d5e937ac2fcead6ec54cbff751f0158eb80d568",
                 "shasum": ""
             },
             "require": {
@@ -527,7 +527,7 @@
                 "issues": "https://github.com/marcosh/lamphpda/issues",
                 "source": "https://github.com/marcosh/lamphpda/tree/master"
             },
-            "time": "2021-11-18T07:26:26+00:00"
+            "time": "2021-11-19T11:42:39+00:00"
         },
         {
             "name": "netresearch/jsonmapper",
@@ -2285,7 +2285,7 @@
         "marcosh/lamphpda": 20
     },
     "prefer-stable": false,
-    "prefer-lowest": false,
+    "prefer-lowest": true,
     "platform": {
         "php": "^7.4|^8.0"
     },
