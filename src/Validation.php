@@ -127,6 +127,23 @@ final class Validation
      * @template C
      * @template F
      * @param F $e
+     * @return (C is string ? Validation<C, F, non-empty-string> : (C is array ? Validation<C, F, non-empty-array> : Validation<C, F, C>))
+     */
+    public static function notEmpty($e): self
+    {
+        return self::satisfies(
+            /**
+             * @param C $a
+             */
+            fn ($a) => !empty($a),
+            $e
+        );
+    }
+
+    /**
+     * @template C
+     * @template F
+     * @param F $e
      * @return (C is string ? Validation<C, F, C> : Validation<C, F, string>)
      */
     public static function isString($e): self
