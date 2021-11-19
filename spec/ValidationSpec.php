@@ -137,7 +137,6 @@ describe('Validation', function () use ($test) {
                 expect(V::notEmpty('nope')->validate(([])))->toEqual(Either::left('nope'));
             });
         });
-
     });
 
     describe('Combinators', function () use ($test) {
