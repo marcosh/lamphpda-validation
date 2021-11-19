@@ -89,31 +89,6 @@ final class Validation
     /**
      * @template C
      * @template F
-     * @param callable(C): bool $f
-     * @param F $e
-     * @return Validation<C, F, C>
-     */
-    public static function satisfies(callable $f, $e): self
-    {
-        return new self(
-            /**
-             * @param C $a
-             */
-            static function ($a) use ($e, $f) {
-                if (!$f($a)) {
-                    /** @var Either<F, C> */
-                    return Either::left($e);
-                }
-
-                /** @var Either<F, C> */
-                return Either::right($a);
-            }
-        );
-    }
-
-    /**
-     * @template C
-     * @template F
      * @param F $e
      * @return (C is array ? Validation<C, F, C> : Validation<C, F, array>)
      */
@@ -121,23 +96,6 @@ final class Validation
     {
         /** @var (C is array ? Validation<C, F, C> : Validation<C, F, array>) */
         return self::satisfies('is_array', $e);
-    }
-
-    /**
-     * @template C
-     * @template F
-     * @param F $e
-     * @return (C is string ? Validation<C, F, non-empty-string> : (C is array ? Validation<C, F, non-empty-array> : Validation<C, F, C>))
-     */
-    public static function notEmpty($e): self
-    {
-        return self::satisfies(
-            /**
-             * @param C $a
-             */
-            fn ($a) => !empty($a),
-            $e
-        );
     }
 
     /**
@@ -152,24 +110,49 @@ final class Validation
         return self::satisfies('is_string', $e);
     }
 
-    // COMBINATORS
+    /**
+     * @template C
+     * @template F
+     * @param F $e
+     * @return (C is string ? Validation<C, F, non-empty-string> : (C is array ? Validation<C, F, non-empty-array> : Validation<C, F, C>))
+     */
+    public static function notEmpty($e): self
+    {
+        return self::satisfies(
+        /**
+         * @param C $a
+         */
+            fn ($a) => !empty($a),
+            $e
+        );
+    }
 
     /**
      * @template C
      * @template F
-     * @template D
-     * @param Monoid<Validation<C, F, D>> $validationMonoid
-     * @param Validation<C, F, D>[] $validations
-     * @return Validation<C, F, D>
+     * @param callable(C): bool $f
+     * @param F $e
+     * @return Validation<C, F, C>
      */
-    public static function fold(Monoid $validationMonoid, array $validations): self
+    public static function satisfies(callable $f, $e): self
     {
-        /** @var Validation<C, F, D> */
-        return Traversable::fromArray($validations)->foldr(
-            [$validationMonoid, 'append'],
-            $validationMonoid->mempty()
+        return new self(
+        /**
+         * @param C $a
+         */
+            static function ($a) use ($e, $f) {
+                if (!$f($a)) {
+                    /** @var Either<F, C> */
+                    return Either::left($e);
+                }
+
+                /** @var Either<F, C> */
+                return Either::right($a);
+            }
         );
     }
+
+    // COMBINATORS
 
     /**
      * @template C
@@ -201,5 +184,22 @@ final class Validation
         $anyMonoid = new AnyMonoid($eMonoid);
 
         return self::fold($anyMonoid, $validations);
+    }
+
+    /**
+     * @template C
+     * @template F
+     * @template D
+     * @param Monoid<Validation<C, F, D>> $validationMonoid
+     * @param Validation<C, F, D>[] $validations
+     * @return Validation<C, F, D>
+     */
+    public static function fold(Monoid $validationMonoid, array $validations): self
+    {
+        /** @var Validation<C, F, D> */
+        return Traversable::fromArray($validations)->foldr(
+            [$validationMonoid, 'append'],
+            $validationMonoid->mempty()
+        );
     }
 }
