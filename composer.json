@@ -13,7 +13,8 @@
   "require": {
     "php": "^7.4|^8.0",
     "marcosh/lamphpda": "dev-master",
-    "giorgiosironi/eris": "^0.12.1"
+    "giorgiosironi/eris": "^0.12.1",
+    "marcosh/lamphpda-optics": "dev-master"
   },
   "autoload": {
     "psr-4": {
