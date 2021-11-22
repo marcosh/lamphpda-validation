@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Marcosh\LamPHPda\Validation;
 
 use Marcosh\LamPHPda\Either;
+use Marcosh\LamPHPda\Optics\Lens;
 use Marcosh\LamPHPda\Traversable;
 use Marcosh\LamPHPda\Typeclass\Monoid;
 use Marcosh\LamPHPda\Typeclass\Semigroup;
@@ -214,6 +215,40 @@ final class Validation
         $anyMonoid = new AnyMonoid($eMonoid);
 
         return self::fold($anyMonoid, $validations);
+    }
+
+    /**
+     * @template C
+     * @template F
+     * @template D
+     * @template L
+     * @template M
+     * @param Lens<C, D, L, M> $lens
+     * @param Validation<L, F, M> $validation
+     * @return Validation<C, F, D>
+     */
+    public static function focus(Lens $lens, self $validation): self
+    {
+        return new Validation(
+            /**
+             * @param C $c
+             * @return Either<F, D>
+             */
+            function ($c) use ($lens, $validation) {
+                $l = $lens->get($c);
+
+                /** @psalm-suppress InvalidArgument */
+                return $validation->validate($l)->map(
+                    /**
+                     * @param M $m
+                     * @return D
+                     */
+                    function ($m) use ($c, $lens) {
+                        return $lens->set($c, $m);
+                    }
+                );
+            }
+        );
     }
 
     /**

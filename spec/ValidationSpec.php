@@ -10,6 +10,7 @@ use Eris\Generator\StringGenerator;
 use Eris\Generator\SuchThatGenerator;
 use Marcosh\LamPHPda\Either;
 use Marcosh\LamPHPda\Instances\String\ConcatenationMonoid;
+use Marcosh\LamPHPda\Optics\Lens;
 use Marcosh\LamPHPda\Validation\Validation as V;
 
 $test = new ValidationTest();
@@ -253,6 +254,40 @@ describe('Validation', function () use ($test) {
                         expect($any->validate($i))->toEqual(Either::left('not multiple of 3not multiple of 2'));
                     }
                 );
+            });
+        });
+
+        describe('focus', function () use ($test) {
+            /** @var Lens<array{foo: string}, array{foo:int}, string, int> $lens */
+            $lens = Lens::lens(
+                /**
+                 * @param array{foo: string} $a
+                 * @return string
+                 */
+                fn (array $a) => $a['foo'],
+                /**
+                 * @param array{foo: string} $a
+                 * @return array{foo: int}
+                 */
+                function (array $a, int $b): array {
+                    $a['foo'] = $b;
+
+                    return $a;
+                }
+            );
+
+            it('fails if the validation on the focus fails', function () use ($lens) {
+                $validation = V::invalid('nope');
+
+                expect(V::focus($lens, $validation)->validate(['foo' => 'a string']))
+                    ->toEqual(Either::left('nope'));
+            });
+
+            it('succeeds if the validation on the focus succeeds', function () use ($lens) {
+                $validation = new V(fn(string $s) => Either::right(strlen($s)));
+
+                expect(V::focus($lens, $validation)->validate(['foo' => 'a string']))
+                    ->toEqual(Either::right(['foo' => 8]));
             });
         });
     });
