@@ -10,7 +10,6 @@ use Marcosh\LamPHPda\Typeclass\Monoid;
 use Marcosh\LamPHPda\Typeclass\Semigroup;
 use Marcosh\LamPHPda\Validation\Instances\Validation\AllMonoid;
 use Marcosh\LamPHPda\Validation\Instances\Validation\AnyMonoid;
-use Marcosh\LamPHPda\Validation\Instances\ValidationSemigroup;
 
 /**
  * a validation is nothing else that a function from A to Either<E, B>
@@ -131,18 +130,29 @@ final class Validation
     }
 
     /**
-     * @template C
      * @template F
      * @param F $e
-     * @return (C is string ? Validation<C, F, non-empty-string> : (C is array ? Validation<C, F, non-empty-array> : Validation<C, F, C>))
+     * @return Validation<array, F, non-empty-array>
      */
-    public static function notEmpty($e): self
+    public static function nonEmptyArray($e): self
     {
+        /** @var Validation<array, F, non-empty-array> */
         return self::satisfies(
-        /**
-         * @param C $a
-         */
-            fn ($a) => !empty($a),
+            fn (array $a) => $a !== [],
+            $e
+        );
+    }
+
+    /**
+     * @template F
+     * @param F $e
+     * @return Validation<string, F, non-empty-string>
+     */
+    public static function nonEmptyString($e): self
+    {
+        /** @var Validation<string, F, non-empty-string> */
+        return self::satisfies(
+            fn (string $a) => $a !== '',
             $e
         );
     }

@@ -115,26 +115,41 @@ describe('Validation', function () use ($test) {
             });
         });
 
-        describe('notEmpty', function () use ($test) {
+        describe('notEmptyArray', function () use ($test) {
+            it('always succeeds for non-empty arrays', function () use ($test) {
+                $test->forAll(
+                    new SuchThatGenerator(
+                        fn(array $s) => !empty($s),
+                        new SequenceGenerator(new IntegerGenerator())
+                    )
+                )->then(
+                    function (array $s) {
+                        expect(V::nonEmptyArray('nope')->validate(($s)))->toEqual(Either::right($s));
+                    }
+                );
+            });
+
+            it('fails for the empty array', function () {
+                expect(V::nonEmptyArray('nope')->validate(([])))->toEqual(Either::left('nope'));
+            });
+        });
+
+        describe('notEmptyString', function () use ($test) {
             it('always succeeds for non-empty strings', function () use ($test) {
                 $test->forAll(
                     new SuchThatGenerator(
-                        fn(string $s) => !empty($s),
+                        fn(string $s) => $s !== '',
                         new StringGenerator()
                     )
                 )->then(
                     function (string $s) {
-                        expect(V::notEmpty('nope')->validate(($s)))->toEqual(Either::right($s));
+                        expect(V::nonEmptyString('nope')->validate(($s)))->toEqual(Either::right($s));
                     }
                 );
             });
 
             it('fails for the empty string', function () {
-                expect(V::notEmpty('nope')->validate(('')))->toEqual(Either::left('nope'));
-            });
-
-            it('fails for the empty array', function () {
-                expect(V::notEmpty('nope')->validate(([])))->toEqual(Either::left('nope'));
+                expect(V::nonEmptyString('nope')->validate(('')))->toEqual(Either::left('nope'));
             });
         });
     });
