@@ -48,6 +48,26 @@ final class Validation
         return ($this->validation)($a);
     }
 
+    /**
+     * Kleisli composition of validations
+     *
+     * @template C
+     * @param Validation<B, E, C> $that
+     * @return Validation<A, E, C>
+     */
+    public function then(self $that): self
+    {
+        return new self(
+            /**
+             * @param A $a
+             * @return Either<E, C>
+             *
+             * @psalm-suppress ArgumentTypeCoercion
+             */
+            fn($a) => $this->validate($a)->bind($that->validation)
+        );
+    }
+
     // TRIVIAL COMBINATORS
 
     /**
@@ -116,6 +136,18 @@ final class Validation
     {
         /** @var (C is array ? Validation<C, F, C> : Validation<C, F, array>) */
         return self::satisfies('is_array', $e);
+    }
+
+    /**
+     * @template C
+     * @template F
+     * @param F $e
+     * @return (C is int ? Validation<C, F, C> : Validation<C, F, int>)
+     */
+    public static function isInteger($e): self
+    {
+        /** @var (C is int ? Validation<C, F, C> : Validation<C, F, int>) */
+        return self::satisfies('is_int', $e);
     }
 
     /**

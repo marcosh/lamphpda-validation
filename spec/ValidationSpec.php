@@ -17,7 +17,7 @@ $test = new ValidationTest();
 
 describe('Validation', function () use ($test) {
 
-    describe('Trivial combinators', function () use ($test) {
+    describe('Trivial validators', function () use ($test) {
 
         describe('valid', function () use ($test) {
             it('always succeeds', function () use ($test) {
@@ -44,7 +44,30 @@ describe('Validation', function () use ($test) {
         });
     });
 
-    describe('Basic combinators', function () use ($test) {
+    describe('Then', function () {
+        it('fails if the first validation fails', function () {
+            $validation1 = V::invalid('nope');
+            $validation2 = V::valid();
+
+            expect($validation1->then($validation2)->validate(42))->toEqual(Either::left('nope'));
+        });
+
+        it('fails if the second validation fails', function () {
+            $validation1 = V::valid();
+            $validation2 = V::invalid('nope');
+
+            expect($validation1->then($validation2)->validate(42))->toEqual(Either::left('nope'));
+        });
+
+        it('succeeds if both validation succeed', function () {
+            $validation1 = V::valid();
+            $validation2 = V::valid();
+
+            expect($validation1->then($validation2)->validate(42))->toEqual(Either::right(42));
+        });
+    });
+
+    describe('Basic validators', function () use ($test) {
 
         describe('hasKey', function () use ($test) {
             it('succeeds if the array has the key', function () use ($test) {
@@ -89,6 +112,28 @@ describe('Validation', function () use ($test) {
                 )->then(
                     function (int $i) {
                         expect(V::isArray('nope')->validate($i))->toEqual(Either::left('nope'));
+                    }
+                );
+            });
+        });
+
+        describe('isInteger', function () use ($test) {
+            it('always succeeds for integers', function () use ($test) {
+                $test->forAll(
+                    new IntegerGenerator()
+                )->then(
+                    function (int $i) {
+                        expect(V::isInteger('nope')->validate($i))->toEqual(Either::right($i));
+                    }
+                );
+            });
+
+            it('always fails for strings', function () use ($test) {
+                $test->forAll(
+                    new StringGenerator()
+                )->then(
+                    function (string $s) {
+                        expect(V::isInteger('nope')->validate($s))->toEqual(Either::left('nope'));
                     }
                 );
             });
