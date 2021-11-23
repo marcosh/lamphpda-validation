@@ -5,12 +5,17 @@ declare(strict_types=1);
 namespace Marcosh\LamPHPda\Validation;
 
 use Marcosh\LamPHPda\Either;
+use Marcosh\LamPHPda\HK\HK2;
 use Marcosh\LamPHPda\Optics\Lens;
 use Marcosh\LamPHPda\Traversable;
+use Marcosh\LamPHPda\Typeclass\DefaultInstance\DefaultProfunctor;
+use Marcosh\LamPHPda\Typeclass\Extra\ExtraProfunctor;
 use Marcosh\LamPHPda\Typeclass\Monoid;
 use Marcosh\LamPHPda\Typeclass\Semigroup;
+use Marcosh\LamPHPda\Validation\Brand\ValidationBrand;
 use Marcosh\LamPHPda\Validation\Instances\Validation\AllMonoid;
 use Marcosh\LamPHPda\Validation\Instances\Validation\AnyMonoid;
+use Marcosh\LamPHPda\Validation\Instances\Validation\ValidationProfunctor;
 
 /**
  * a validation is nothing else that a function from A to Either<E, B>
@@ -19,9 +24,11 @@ use Marcosh\LamPHPda\Validation\Instances\Validation\AnyMonoid;
  * @template E potential validation error
  * @template B parsed validation result
  *
+ * @implements DefaultProfunctor<ValidationBrand<E>, A, B>
+ *
  * @psalm-immutable
  */
-final class Validation
+final class Validation implements DefaultProfunctor
 {
     /** @var callable(A): Either<E, B> */
     private $validation;
@@ -32,6 +39,55 @@ final class Validation
     public function __construct(callable $validation)
     {
         $this->validation = $validation;
+    }
+
+    /**
+     * @template C
+     * @template D
+     * @template F
+     * @param HK2<ValidationBrand<F>, C, D> $hk
+     * @return Validation<C, F, D>
+     *
+     * @psalm-pure
+     */
+    public static function fromBrand(HK2 $hk): self
+    {
+        /** @var Validation<C, F, D> */
+        return $hk;
+    }
+
+    // PROFUNCTOR INSTANCE
+
+    /**
+     * @template C
+     * @template D
+     * @param callable(C): A $f
+     * @param callable(B): D $g
+     * @return Validation<C, E, D>
+     */
+    public function diMap(callable $f, callable $g): self
+    {
+        return (new ValidationProfunctor())->diMap($f, $g, $this);
+    }
+
+    /**
+     * @template C
+     * @param callable(C): A $f
+     * @return Validation<C, E, B>
+     */
+    public function lmap(callable $f): self
+    {
+        return self::fromBrand((new ExtraProfunctor(new ValidationProfunctor()))->lmap($f, $this));
+    }
+
+    /**
+     * @template D
+     * @param callable(B): D $g
+     * @return Validation<A, E, D>
+     */
+    public function rmap(callable $g): self
+    {
+        return self::fromBrand((new ExtraProfunctor(new ValidationProfunctor()))->rmap($g, $this));
     }
 
     /**
