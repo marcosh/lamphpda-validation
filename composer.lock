@@ -487,12 +487,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/marcosh/lamphpda.git",
-                "reference": "8916fa64a66cd0883e63a2e0ef27303c9673c9c0"
+                "reference": "1dd0a7509760b461dfc7fe4a792dc246510d7c57"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/marcosh/lamphpda/zipball/8916fa64a66cd0883e63a2e0ef27303c9673c9c0",
-                "reference": "8916fa64a66cd0883e63a2e0ef27303c9673c9c0",
+                "url": "https://api.github.com/repos/marcosh/lamphpda/zipball/1dd0a7509760b461dfc7fe4a792dc246510d7c57",
+                "reference": "1dd0a7509760b461dfc7fe4a792dc246510d7c57",
                 "shasum": ""
             },
             "require": {
@@ -527,7 +527,7 @@
                 "issues": "https://github.com/marcosh/lamphpda/issues",
                 "source": "https://github.com/marcosh/lamphpda/tree/master"
             },
-            "time": "2021-11-23T10:20:04+00:00"
+            "time": "2021-11-23T10:57:33+00:00"
         },
         {
             "name": "marcosh/lamphpda-optics",
