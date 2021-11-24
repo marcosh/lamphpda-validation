@@ -9,7 +9,8 @@ use Eris\Generator\SequenceGenerator;
 use Eris\Generator\StringGenerator;
 use Eris\Generator\SuchThatGenerator;
 use Marcosh\LamPHPda\Either;
-use Marcosh\LamPHPda\Instances\String\ConcatenationMonoid;
+use Marcosh\LamPHPda\Instances\FirstSemigroup;
+use Marcosh\LamPHPda\Instances\ListL\ConcatenationMonoid;
 use Marcosh\LamPHPda\Optics\Lens;
 use Marcosh\LamPHPda\Validation\Validation as V;
 
@@ -206,8 +207,8 @@ describe('Validation', function () use ($test) {
             $all = V::all(
                 new ConcatenationMonoid(),
                 [
-                    V::satisfies(fn(int $i) => $i % 2 === 0, 'not multiple of 2'),
-                    V::satisfies(fn(int $i) => $i % 3 === 0, 'not multiple of 3')
+                    V::satisfies(fn(int $i) => $i % 2 === 0, ['not multiple of 2']),
+                    V::satisfies(fn(int $i) => $i % 3 === 0, ['not multiple of 3'])
                 ]
             );
 
@@ -231,7 +232,7 @@ describe('Validation', function () use ($test) {
                     )
                 )->then(
                     function (int $i) use ($all) {
-                        expect($all->validate($i * 2))->toEqual(Either::left('not multiple of 3'));
+                        expect($all->validate($i * 2))->toEqual(Either::left(['not multiple of 3']));
                     }
                 );
             });
@@ -246,7 +247,7 @@ describe('Validation', function () use ($test) {
                     )
                 )->then(
                     function (int $i) use ($all) {
-                        expect($all->validate($i))->toEqual(Either::left('not multiple of 3not multiple of 2'));
+                        expect($all->validate($i))->toEqual(Either::left(['not multiple of 3', 'not multiple of 2']));
                     }
                 );
             });
@@ -256,8 +257,8 @@ describe('Validation', function () use ($test) {
             $any = V::any(
                 new ConcatenationMonoid(),
                 [
-                    V::satisfies(fn(int $i) => $i % 2 === 0, 'not multiple of 2'),
-                    V::satisfies(fn(int $i) => $i % 3 === 0, 'not multiple of 3')
+                    V::satisfies(fn(int $i) => $i % 2 === 0, ['not multiple of 2']),
+                    V::satisfies(fn(int $i) => $i % 3 === 0, ['not multiple of 3'])
                 ]
             );
 
@@ -296,9 +297,69 @@ describe('Validation', function () use ($test) {
                     )
                 )->then(
                     function (int $i) use ($any) {
-                        expect($any->validate($i))->toEqual(Either::left('not multiple of 3not multiple of 2'));
+                        expect($any->validate($i))->toEqual(Either::left(['not multiple of 3', 'not multiple of 2']));
                     }
                 );
+            });
+        });
+
+        describe('anyElement', function () use ($test) {
+            it('fails it the validation fails for every element', function () use ($test) {
+                $test->forAll(
+                    new SequenceGenerator(new IntegerGenerator())
+                )->then(
+                    function (array $a) {
+                        $anyElement = V::anyElement(V::invalid('nope'), 'nope nope');
+
+                        expect($anyElement->validate($a))->toEqual(Either::left('nope nope'));
+                    }
+                );
+            });
+
+            it('succeeds it the validation succeeds for at least one element', function () use ($test) {
+                $test->forAll(
+                    new SequenceGenerator(new IntegerGenerator())
+                )->then(
+                    function (array $a) {
+                        $anyElement = V::anyElement(V::satisfies(fn($x) => $x === 42, 'nope'), 'nope nope');
+
+                        $a[] = 42;
+
+                        expect($anyElement->validate($a))->toEqual(Either::right($a));
+                    }
+                );
+            });
+        });
+
+        describe('everyElement', function () use ($test) {
+            it('fails if the validation fails for at least one element', function () use ($test) {
+                $test->forAll(
+                    new SequenceGenerator(new IntegerGenerator())
+                )->then(
+                    function (array $a) {
+                        $shouldNotContain42 = V::everyElement(
+                            new FirstSemigroup(),
+                            V::satisfies(fn(int $x) => $x !== 42, ['not 42'])
+                        );
+
+                        $a[] = 42;
+
+                        expect($shouldNotContain42->validate($a))->toEqual(Either::left(['not 42']));
+                    }
+                );
+            });
+
+            it('succeeds if the validation succeeds for every element', function () use ($test) {
+                $test->forAll(
+                    new SequenceGenerator(new IntegerGenerator())
+                )->then(function (array $a) {
+                    $everyElementIsFine = V::everyElement(
+                        new FirstSemigroup(),
+                        V::valid()
+                    );
+
+                    expect($everyElementIsFine->validate($a))->toEqual(Either::right($a));
+                });
             });
         });
 

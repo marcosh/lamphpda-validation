@@ -4,10 +4,18 @@ declare(strict_types=1);
 
 namespace Marcosh\LamPHPda\Validation;
 
+use Marcosh\LamPHPda\Brand\EitherBrand;
+use Marcosh\LamPHPda\Brand\ListBrand;
 use Marcosh\LamPHPda\Either;
+use Marcosh\LamPHPda\HK\HK1;
 use Marcosh\LamPHPda\HK\HK2;
+use Marcosh\LamPHPda\Instances\Either\EitherFunctor;
+use Marcosh\LamPHPda\Instances\Either\ValidationApplicative;
+use Marcosh\LamPHPda\Instances\ListL\ListTraversable;
+use Marcosh\LamPHPda\ListL;
 use Marcosh\LamPHPda\Optics\Lens;
 use Marcosh\LamPHPda\Traversable;
+use Marcosh\LamPHPda\Typeclass\Applicative;
 use Marcosh\LamPHPda\Typeclass\DefaultInstance\DefaultProfunctor;
 use Marcosh\LamPHPda\Typeclass\Extra\ExtraProfunctor;
 use Marcosh\LamPHPda\Typeclass\Monoid;
@@ -278,7 +286,7 @@ final class Validation implements DefaultProfunctor
      * @template F
      * @template D
      * @param Semigroup<F> $eSemigroup
-     * @param Validation<C, F, D>[] $validations
+     * @param list<Validation<C, F, D>> $validations
      * @return Validation<C, F, D>
      */
     public static function all(Semigroup $eSemigroup, array $validations): self
@@ -294,7 +302,7 @@ final class Validation implements DefaultProfunctor
      * @template F
      * @template D
      * @param Monoid<F> $eMonoid
-     * @param Validation<C, F, D>[] $validations
+     * @param list<Validation<C, F, D>> $validations
      * @return Validation<C, F, D>
      */
     public static function any(Monoid $eMonoid, array $validations): self
@@ -303,6 +311,89 @@ final class Validation implements DefaultProfunctor
         $anyMonoid = new AnyMonoid($eMonoid);
 
         return self::fold($anyMonoid, $validations);
+    }
+
+    /**
+     * @template C
+     * @template F
+     * @param Validation<C, F, C> $elementValidation
+     * @param F $e
+     * @return Validation<list<C>, F, list<C>>
+     */
+    public static function anyElement(Validation $elementValidation, $e): self
+    {
+        /** @var Validation<list<C>, F, list<C>> */
+        return new self(
+            /**
+             * @param list<C> $cs
+             * @return Either<F, list<C>>
+             */
+            function (array $cs) use ($elementValidation, $e) {
+                foreach ($cs as $c) {
+                    /** @psalm-suppress InvalidArgument */
+                    $succeeds = $elementValidation->validate($c)->eval(
+                        /**
+                         * @param F $_
+                         * @return bool
+                         */
+                        fn($_) => false,
+                        /**
+                         * @param C $_
+                         * @return bool
+                         */
+                        fn($_) => true
+                    );
+
+                    if ($succeeds) {
+                        /** @var Either<F, list<C>> */
+                        return Either::right($cs);
+                    }
+                }
+
+                /** @var Either<F, list<C>> */
+                return Either::left($e);
+            }
+        );
+    }
+
+    /**
+     * @template C
+     * @template D
+     * @template F
+     * @param Semigroup<F> $eSemigroup
+     * @param Validation<C, F, D> $elementValidation
+     * @return Validation<list<C>, F, list<D>>
+     */
+    public static function everyElement(Semigroup $eSemigroup, Validation $elementValidation): self
+    {
+        /** @var Validation<list<C>, F, list<D>> */
+        return new self(
+            /**
+             * @param list<C> $cs
+             * @return Either<F, list<D>>
+             */
+            function (array $cs) use ($eSemigroup, $elementValidation) {
+                /** @var Applicative<EitherBrand<F> > $applicative */
+                $applicative = new ValidationApplicative($eSemigroup);
+
+                /**
+                 * @psalm-suppress ArgumentTypeCoercion
+                 * @psalm-suppress InvalidArgument
+                 */
+                return (new EitherFunctor())->map(
+                    /**
+                     * @param HK1<ListBrand, D> $hk
+                     * @return list<D>
+                     */
+                    fn (HK1 $hk) => ListL::fromBrand($hk)->asNativeList(),
+                    (new ListTraversable())->traverse(
+                        $applicative,
+                        $elementValidation->validation,
+                        new ListL($cs)
+                    )
+                );
+            }
+        );
     }
 
     /**
@@ -344,7 +435,7 @@ final class Validation implements DefaultProfunctor
      * @template F
      * @template D
      * @param Monoid<Validation<C, F, D>> $validationMonoid
-     * @param Validation<C, F, D>[] $validations
+     * @param list<Validation<C, F, D>> $validations
      * @return Validation<C, F, D>
      */
     public static function fold(Monoid $validationMonoid, array $validations): self
