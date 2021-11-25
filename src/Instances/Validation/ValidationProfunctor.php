@@ -7,11 +7,11 @@ namespace Marcosh\LamPHPda\Validation\Instances\Validation;
 use Marcosh\LamPHPda\Either;
 use Marcosh\LamPHPda\HK\HK2;
 use Marcosh\LamPHPda\Typeclass\Profunctor;
-use Marcosh\LamPHPda\Validation\Brand\ValidationBrand;
+use Marcosh\LamPHPda\Validation\Brand\ValidationBrand2;
 use Marcosh\LamPHPda\Validation\Validation;
 
 /**
- * @implements Profunctor<ValidationBrand>
+ * @implements Profunctor<ValidationBrand2>
  *
  * @psalm-immutable
  */
@@ -25,12 +25,12 @@ final class ValidationProfunctor implements Profunctor
      * @template E
      * @param callable(A): B $f
      * @param callable(C): D $g
-     * @param HK2<ValidationBrand<E>, B, C> $a
+     * @param HK2<ValidationBrand2<E>, B, C> $a
      * @return Validation<A, E, D>
      */
     public function diMap(callable $f, callable $g, HK2 $a): Validation
     {
-        $validation = Validation::fromBrand($a);
+        $validation = Validation::fromBrand2($a);
 
         return new Validation(
             /**

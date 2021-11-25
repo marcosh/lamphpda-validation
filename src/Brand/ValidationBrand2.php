@@ -8,11 +8,10 @@ use Marcosh\LamPHPda\Brand\Brand;
 use Marcosh\LamPHPda\Validation\Validation;
 
 /**
- * @template A
  * @template E
  *
  * @implements Brand<Validation>
  */
-final class ValidationBrand implements Brand
+final class ValidationBrand2 implements Brand
 {
 }

@@ -21,6 +21,7 @@ use Marcosh\LamPHPda\Typeclass\Extra\ExtraProfunctor;
 use Marcosh\LamPHPda\Typeclass\Monoid;
 use Marcosh\LamPHPda\Typeclass\Semigroup;
 use Marcosh\LamPHPda\Validation\Brand\ValidationBrand;
+use Marcosh\LamPHPda\Validation\Brand\ValidationBrand2;
 use Marcosh\LamPHPda\Validation\Instances\Validation\AllMonoid;
 use Marcosh\LamPHPda\Validation\Instances\Validation\AnyMonoid;
 use Marcosh\LamPHPda\Validation\Instances\Validation\ValidationProfunctor;
@@ -32,11 +33,12 @@ use Marcosh\LamPHPda\Validation\Instances\Validation\ValidationProfunctor;
  * @template E potential validation error
  * @template B parsed validation result
  *
- * @implements DefaultProfunctor<ValidationBrand<E>, A, B>
+ * @implements DefaultProfunctor<ValidationBrand2<E>, A, B>
+ * @implements HK1<ValidationBrand<A, E>, B>
  *
  * @psalm-immutable
  */
-final class Validation implements DefaultProfunctor
+final class Validation implements DefaultProfunctor, HK1
 {
     /** @var callable(A): Either<E, B> */
     private $validation;
@@ -53,12 +55,27 @@ final class Validation implements DefaultProfunctor
      * @template C
      * @template D
      * @template F
-     * @param HK2<ValidationBrand<F>, C, D> $hk
+     * @param HK1<ValidationBrand<C, F>, D> $hk
      * @return Validation<C, F, D>
      *
      * @psalm-pure
      */
-    public static function fromBrand(HK2 $hk): self
+    public static function fromBrand(HK1 $hk): self
+    {
+        /** @var Validation<C, F, D> */
+        return $hk;
+    }
+
+    /**
+     * @template C
+     * @template D
+     * @template F
+     * @param HK2<ValidationBrand2<F>, C, D> $hk
+     * @return Validation<C, F, D>
+     *
+     * @psalm-pure
+     */
+    public static function fromBrand2(HK2 $hk): self
     {
         /** @var Validation<C, F, D> */
         return $hk;
@@ -85,7 +102,7 @@ final class Validation implements DefaultProfunctor
      */
     public function lmap(callable $f): self
     {
-        return self::fromBrand((new ExtraProfunctor(new ValidationProfunctor()))->lmap($f, $this));
+        return self::fromBrand2((new ExtraProfunctor(new ValidationProfunctor()))->lmap($f, $this));
     }
 
     /**
@@ -95,7 +112,7 @@ final class Validation implements DefaultProfunctor
      */
     public function rmap(callable $g): self
     {
-        return self::fromBrand((new ExtraProfunctor(new ValidationProfunctor()))->rmap($g, $this));
+        return self::fromBrand2((new ExtraProfunctor(new ValidationProfunctor()))->rmap($g, $this));
     }
 
     /**
