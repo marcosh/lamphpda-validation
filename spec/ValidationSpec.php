@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Marcosh\LamPHPda\ValidationSpec;
 
+use Eris\Generator\FloatGenerator;
 use Eris\Generator\IntegerGenerator;
 use Eris\Generator\SequenceGenerator;
 use Eris\Generator\StringGenerator;
@@ -113,6 +114,28 @@ describe('Validation', function () use ($test) {
                 )->then(
                     function (int $i) {
                         expect(V::isArray('nope')->validate($i))->toEqual(Either::left('nope'));
+                    }
+                );
+            });
+        });
+
+        describe('isFloat', function () use ($test) {
+            it('always succeeds for floats', function () use ($test) {
+                $test->forAll(
+                    new FloatGenerator()
+                )->then(
+                    function (float $i) {
+                        expect(V::isFloat('nope')->validate($i))->toEqual(Either::right($i));
+                    }
+                );
+            });
+
+            it('always fails for strings', function () use ($test) {
+                $test->forAll(
+                    new StringGenerator()
+                )->then(
+                    function (string $s) {
+                        expect(V::isFloat('nope')->validate($s))->toEqual(Either::left('nope'));
                     }
                 );
             });

@@ -223,6 +223,18 @@ final class Validation implements DefaultProfunctor, HK1
      * @template C
      * @template F
      * @param F $e
+     * @return (C is float ? Validation<C, F, C> : Validation<C, F, float>)
+     */
+    public static function isFloat($e): self
+    {
+        /** @var (C is float ? Validation<C, F, C> : Validation<C, F, float>) */
+        return self::satisfies('is_float', $e);
+    }
+
+    /**
+     * @template C
+     * @template F
+     * @param F $e
      * @return (C is int ? Validation<C, F, C> : Validation<C, F, int>)
      */
     public static function isInteger($e): self
