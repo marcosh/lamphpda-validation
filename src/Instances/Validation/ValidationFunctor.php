@@ -28,7 +28,7 @@ final class ValidationFunctor implements Functor
      *
      * @psalm-pure
      */
-    public function map(callable $f, HK1 $a): HK1
+    public function map(callable $f, HK1 $a): Validation
     {
         $aValidation = Validation::fromBrand($a);
 
