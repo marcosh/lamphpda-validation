@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Marcosh\LamPHPda\Validation;
 
+use DateTimeImmutable;
+use Exception;
 use Marcosh\LamPHPda\Brand\EitherBrand;
 use Marcosh\LamPHPda\Brand\ListBrand;
 use Marcosh\LamPHPda\Either;
@@ -233,6 +235,41 @@ final class Validation implements DefaultProfunctor, HK1
     {
         /** @var (C is array ? Validation<C, F, C> : Validation<C, F, array>) */
         return self::satisfies('is_array', $e);
+    }
+
+    /**
+     * @template C
+     * @template F
+     * @param F $e
+     * @return Validation<C, F, bool>
+     */
+    public static function isBool($e): self
+    {
+        /** @var Validation<C, F, bool> */
+        return self::satisfies('is_bool', $e);
+    }
+
+    /**
+     * @template C
+     * @template F
+     * @param callable(string): F $e
+     * @return Validation<string, F, DateTimeImmutable>
+     */
+    public static function isDate(callable $e): self
+    {
+        /** @var Validation<string, F, DateTimeImmutable> */
+        return new self(
+            /**
+             * @return Either<F, DateTimeImmutable>
+             */
+            static function (string $date) use ($e) {
+                try {
+                    return Either::right(new DateTimeImmutable($date));
+                } catch (Exception $exception) {
+                    return Either::left($e($exception->getMessage()));
+                }
+            }
+        );
     }
 
     /**

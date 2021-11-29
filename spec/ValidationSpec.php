@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace Marcosh\LamPHPda\ValidationSpec;
 
+use DateTime;
+use DateTimeImmutable;
 use Eris\Generator\AssociativeArrayGenerator;
+use Eris\Generator\BooleanGenerator;
+use Eris\Generator\DateGenerator;
 use Eris\Generator\FloatGenerator;
 use Eris\Generator\IntegerGenerator;
 use Eris\Generator\SequenceGenerator;
 use Eris\Generator\StringGenerator;
 use Eris\Generator\SuchThatGenerator;
+use Exception;
 use Marcosh\LamPHPda\Either;
 use Marcosh\LamPHPda\Instances\FirstSemigroup;
 use Marcosh\LamPHPda\Instances\ListL\ConcatenationMonoid;
@@ -115,6 +120,65 @@ describe('Validation', function () use ($test) {
                 )->then(
                     function (int $i) {
                         expect(V::isArray('nope')->validate($i))->toEqual(Either::left('nope'));
+                    }
+                );
+            });
+        });
+
+        describe('isBool', function () use ($test) {
+            it('always succeeds for booleans', function () use ($test) {
+                $test->forAll(
+                    new BooleanGenerator()
+                )->then(
+                    function (bool $b) {
+                        expect(V::isBool('nope')->validate($b))->toEqual(Either::right($b));
+                    }
+                );
+            });
+
+            it('always fails for integers', function () use ($test) {
+                $test->forAll(
+                    new IntegerGenerator()
+                )->then(
+                    function (int $i) {
+                        expect(V::isBool('nope')->validate($i))->toEqual(Either::left('nope'));
+                    }
+                );
+            });
+        });
+
+        describe('isDate', function () use ($test) {
+            it('always succeeds for dates', function () use ($test) {
+                $test->forAll(
+                    new DateGenerator(
+                        new DateTime("@0"),
+                        new DateTime("@" . ((2 ** 31) - 1))
+                    )
+                )->then(
+                    function (DateTime $date) {
+                        expect(V::isDate(fn ($e) => $e)->validate($date->format('Y:m:d H:i:s')))
+                            ->toEqual(Either::right(DateTimeImmutable::createFromMutable($date)));
+                    }
+                );
+            });
+
+            it('always fails for invalid dates', function () use ($test) {
+                $test->forAll(
+                    new SuchThatGenerator(
+                        function (string $s) {
+                            try {
+                                new DateTimeImmutable($s);
+
+                                return false;
+                            } catch (Exception $e) {
+                                return true;
+                            }
+                        },
+                        new StringGenerator()
+                    )
+                )->then(
+                    function (string $i) {
+                        expect(V::isDate(fn ($_) => 'nope')->validate($i))->toEqual(Either::left('nope'));
                     }
                 );
             });
