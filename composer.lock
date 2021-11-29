@@ -535,12 +535,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/marcosh/lamphpda-optics.git",
-                "reference": "f5a417d5a712f0027f151d4c6ce41cb91188d810"
+                "reference": "1700669058dd441b855dd0fa36d5d586089408e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/marcosh/lamphpda-optics/zipball/f5a417d5a712f0027f151d4c6ce41cb91188d810",
-                "reference": "f5a417d5a712f0027f151d4c6ce41cb91188d810",
+                "url": "https://api.github.com/repos/marcosh/lamphpda-optics/zipball/1700669058dd441b855dd0fa36d5d586089408e7",
+                "reference": "1700669058dd441b855dd0fa36d5d586089408e7",
                 "shasum": ""
             },
             "require": {
@@ -575,7 +575,7 @@
                 "issues": "https://github.com/marcosh/lamphpda-optics/issues",
                 "source": "https://github.com/marcosh/lamphpda-optics/tree/master"
             },
-            "time": "2021-11-22T11:24:01+00:00"
+            "time": "2021-11-26T16:33:07+00:00"
         },
         {
             "name": "netresearch/jsonmapper",
@@ -2334,7 +2334,7 @@
         "marcosh/lamphpda-optics": 20
     },
     "prefer-stable": false,
-    "prefer-lowest": true,
+    "prefer-lowest": false,
     "platform": {
         "php": "^7.4|^8.0"
     },
