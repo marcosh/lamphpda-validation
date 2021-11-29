@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Marcosh\LamPHPda\ValidationSpec;
 
+use Eris\Generator\AssociativeArrayGenerator;
 use Eris\Generator\FloatGenerator;
 use Eris\Generator\IntegerGenerator;
 use Eris\Generator\SequenceGenerator;
@@ -351,6 +352,59 @@ describe('Validation', function () use ($test) {
                         expect($anyElement->validate($a))->toEqual(Either::right($a));
                     }
                 );
+            });
+        });
+
+        describe('associativeArray', function () use ($test) {
+            $validation = V::associativeArray(
+                [
+                    'int' => V::isInteger(['int is not an integer']),
+                    'string' => V::isString(['string is not a string'])
+                ],
+                ['not an array'],
+                new ConcatenationMonoid(),
+                fn($key) => [sprintf('key %s is missing', $key)],
+                fn($key, $error) => [$key => $error]
+            );
+
+            it('succeeds when the validation of every field succeeds', function () use ($test, $validation) {
+                $test->forAll(
+                    new AssociativeArrayGenerator([
+                        'int' => new IntegerGenerator(),
+                        'string' => new StringGenerator()
+                    ])
+                )->then(function (array $a) use ($validation) {
+                    expect($validation->validate($a))->toEqual(Either::right($a));
+                });
+            });
+
+            it('fails when the input is not an array', function () use ($test, $validation) {
+                $test->forAll(
+                    new IntegerGenerator()
+                )->then(function (int $i) use ($validation) {
+                    expect($validation->validate($i))->toEqual(Either::left(['not an array']));
+                });
+            });
+
+            it('fails when a key is missing', function () use ($test, $validation) {
+                $test->forAll(
+                    new AssociativeArrayGenerator([
+                        'int' => new IntegerGenerator()
+                    ])
+                )->then(function (array $a) use ($validation) {
+                    expect($validation->validate($a))->toEqual(Either::left(['key string is missing']));
+                });
+            });
+
+            it('fails when a key contains a value which does not pass validation', function () use ($test, $validation) {
+                $test->forAll(
+                    new AssociativeArrayGenerator([
+                        'int' => new IntegerGenerator(),
+                        'string' => new IntegerGenerator()
+                    ])
+                )->then(function (array $a) use ($validation) {
+                    expect($validation->validate($a))->toEqual(Either::left(['string' => ['string is not a string']]));
+                });
             });
         });
 

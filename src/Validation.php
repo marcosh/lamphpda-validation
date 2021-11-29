@@ -149,6 +149,22 @@ final class Validation implements DefaultProfunctor, HK1
         );
     }
 
+    /**
+     * @template F
+     * @param callable(E): F $f
+     * @return self Validation<A, F, B>
+     */
+    public function mapFailure(callable $f): self
+    {
+        return new self(
+            /**
+             * @param A $a
+             * @return Either<F, B>
+             */
+            fn($a) => $this->validate($a)->mapLeft($f)
+        );
+    }
+
     // TRIVIAL COMBINATORS
 
     /**
@@ -383,6 +399,57 @@ final class Validation implements DefaultProfunctor, HK1
                 return Either::left($e);
             }
         );
+    }
+
+    /**
+     * @template K of array-key
+     * @template F
+     * @param array<K, Validation> $validators
+     * @param F $notArrayError
+     * @param Semigroup<F> $eSemigroup
+     * @param callable(K): F $missingKey
+     * @param callable(K, F): F $focusFailure
+     * @return Validation<mixed, F, array<K, mixed>>
+     */
+    public static function associativeArray(
+        array $validators,
+        $notArrayError,
+        Semigroup $eSemigroup,
+        callable $missingKey,
+        callable $focusFailure
+    ): self {
+        /** @var Validation<mixed, F, array> $isArray */
+        $isArray = self::isArray($notArrayError);
+
+        /** @var Validation<array, F, array<K, mixed>> $keysValidator */
+        $keysValidator = self::all(
+            $eSemigroup,
+            array_map(
+            /**
+             * @param K $key
+             * @param Validation $validator
+             * @return Validation
+             */
+                function ($key, self $validator) use ($missingKey, $focusFailure) {
+                    /**
+                     * @psalm-suppress InvalidArgument
+                     */
+                    return self::hasKey($key, $missingKey($key))->then(self::focus(
+                        Lens::arrayKey($key),
+                        $validator->mapFailure(
+                        /**
+                         * @param F $error
+                         * @return F
+                         */
+                            fn($error) => $focusFailure($key, $error)
+                        )
+                    ));
+                },
+                array_keys($validators),
+                $validators
+            )
+        );
+        return $isArray->then($keysValidator);
     }
 
     /**
