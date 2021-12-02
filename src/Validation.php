@@ -13,6 +13,7 @@ use Marcosh\LamPHPda\HK\HK1;
 use Marcosh\LamPHPda\HK\HK2;
 use Marcosh\LamPHPda\Instances\Either\EitherFunctor;
 use Marcosh\LamPHPda\Instances\Either\ValidationApplicative;
+use Marcosh\LamPHPda\Instances\ListL\ConcatenationMonoid;
 use Marcosh\LamPHPda\Instances\ListL\ListTraversable;
 use Marcosh\LamPHPda\ListL;
 use Marcosh\LamPHPda\Optics\Lens;
@@ -368,13 +369,14 @@ final class Validation implements DefaultProfunctor, HK1
      * @template F
      * @template D
      * @param Semigroup<F> $eSemigroup
+     * @param Semigroup<D> $bSemigroup
      * @param list<Validation<C, F, D>> $validations
      * @return Validation<C, F, D>
      */
-    public static function all(Semigroup $eSemigroup, array $validations): self
+    public static function all(Semigroup $eSemigroup, Semigroup $bSemigroup, array $validations): self
     {
         /** @var AllMonoid<C, F, D> $allMonoid */
-        $allMonoid = new AllMonoid($eSemigroup);
+        $allMonoid = new AllMonoid($eSemigroup, $bSemigroup);
 
         return self::fold($allMonoid, $validations);
     }
@@ -384,13 +386,14 @@ final class Validation implements DefaultProfunctor, HK1
      * @template F
      * @template D
      * @param Monoid<F> $eMonoid
+     * @param Semigroup<D> $bSemigroup
      * @param list<Validation<C, F, D>> $validations
      * @return Validation<C, F, D>
      */
-    public static function any(Monoid $eMonoid, array $validations): self
+    public static function any(Monoid $eMonoid, Semigroup $bSemigroup, array $validations): self
     {
         /** @var AnyMonoid<C, F, D> $anyMonoid */
-        $anyMonoid = new AnyMonoid($eMonoid);
+        $anyMonoid = new AnyMonoid($eMonoid, $bSemigroup);
 
         return self::fold($anyMonoid, $validations);
     }
@@ -461,12 +464,13 @@ final class Validation implements DefaultProfunctor, HK1
         /** @var Validation<array, F, array<K, mixed>> $keysValidator */
         $keysValidator = self::all(
             $eSemigroup,
+            new ConcatenationMonoid(),
             array_map(
-            /**
-             * @param K $key
-             * @param Validation $validator
-             * @return Validation
-             */
+                /**
+                 * @param K $key
+                 * @param Validation $validator
+                 * @return Validation
+                 */
                 function ($key, self $validator) use ($missingKey, $focusFailure) {
                     /**
                      * @psalm-suppress InvalidArgument
@@ -474,10 +478,10 @@ final class Validation implements DefaultProfunctor, HK1
                     return self::hasKey($key, $missingKey($key))->then(self::focus(
                         Lens::arrayKey($key),
                         $validator->mapFailure(
-                        /**
-                         * @param F $error
-                         * @return F
-                         */
+                            /**
+                             * @param F $error
+                             * @return F
+                             */
                             fn($error) => $focusFailure($key, $error)
                         )
                     ));
@@ -486,6 +490,7 @@ final class Validation implements DefaultProfunctor, HK1
                 $validators
             )
         );
+
         return $isArray->then($keysValidator);
     }
 
