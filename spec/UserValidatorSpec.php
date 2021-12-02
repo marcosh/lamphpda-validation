@@ -8,6 +8,7 @@ use Eris\Generator\SequenceGenerator;
 use Eris\Generator\StringGenerator;
 use Eris\Generator\SuchThatGenerator;
 use Marcosh\LamPHPda\Either;
+use Marcosh\LamPHPda\Instances\FirstSemigroup;
 use Marcosh\LamPHPda\Instances\ListL\ConcatenationMonoid;
 use Marcosh\LamPHPda\Optics\Lens;
 use Marcosh\LamPHPda\Validation\Validation as V;
@@ -134,10 +135,14 @@ $hasAgeKeyContainingPositiveInteger = V::hasKey('age', ['missing "age" key'])->t
 /** @var V<mixed, string[], User> $validation */
 $validation =
     V::isArray(['not an array'])->then(
-        V::all(new ConcatenationMonoid(), [
-            $hasNameKeyContainingNonEmptyString,
-            $hasAgeKeyContainingPositiveInteger
-        ])
+        V::all(
+            new ConcatenationMonoid(),
+            new FirstSemigroup(),
+            [
+                $hasNameKeyContainingNonEmptyString,
+                $hasAgeKeyContainingPositiveInteger
+            ]
+        )
     )->rmap([User::class, 'fromRawData']);
 
 /*
@@ -175,8 +180,8 @@ describe('UserValidation', function () use ($test, $validation) {
             new SequenceGenerator(new IntegerGenerator())
         )->then(function (array $a) use ($validation) {
             expect($validation->validate($a))->toEqual(Either::left([
-                'missing "age" key',
-                'missing "name" key'
+                'missing "name" key',
+                'missing "age" key'
             ]));
         });
     });

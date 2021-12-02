@@ -294,6 +294,7 @@ describe('Validation', function () use ($test) {
         describe('all', function () use ($test) {
             $all = V::all(
                 new ConcatenationMonoid(),
+                new FirstSemigroup(),
                 [
                     V::satisfies(fn(int $i) => $i % 2 === 0, ['not multiple of 2']),
                     V::satisfies(fn(int $i) => $i % 3 === 0, ['not multiple of 3'])
@@ -335,7 +336,7 @@ describe('Validation', function () use ($test) {
                     )
                 )->then(
                     function (int $i) use ($all) {
-                        expect($all->validate($i))->toEqual(Either::left(['not multiple of 3', 'not multiple of 2']));
+                        expect($all->validate($i))->toEqual(Either::left(['not multiple of 2', 'not multiple of 3']));
                     }
                 );
             });
@@ -344,6 +345,7 @@ describe('Validation', function () use ($test) {
         describe('any', function () use ($test) {
             $any = V::any(
                 new ConcatenationMonoid(),
+                new FirstSemigroup(),
                 [
                     V::satisfies(fn(int $i) => $i % 2 === 0, ['not multiple of 2']),
                     V::satisfies(fn(int $i) => $i % 3 === 0, ['not multiple of 3'])
@@ -385,7 +387,7 @@ describe('Validation', function () use ($test) {
                     )
                 )->then(
                     function (int $i) use ($any) {
-                        expect($any->validate($i))->toEqual(Either::left(['not multiple of 3', 'not multiple of 2']));
+                        expect($any->validate($i))->toEqual(Either::left(['not multiple of 2', 'not multiple of 3']));
                     }
                 );
             });
@@ -469,6 +471,26 @@ describe('Validation', function () use ($test) {
                 )->then(function (array $a) use ($validation) {
                     expect($validation->validate($a))->toEqual(Either::left(['string' => ['string is not a string']]));
                 });
+            });
+
+            it('preserves the type changing validations at the field level', function () use ($test) {
+                $validation = V::associativeArray(
+                    [
+                        'foo' => new V(fn(int $i) => Either::right((string)$i)),
+                        'bar' => new V(fn(int $i) => Either::right((float)$i))
+                    ],
+                    ['not an array'],
+                    new ConcatenationMonoid(),
+                    fn($key) => [sprintf('key %s is missing', $key)],
+                    fn($key, $error) => [$key => $error]
+                );
+
+                $data = [
+                    'foo' => 42,
+                    'bar' => 37
+                ];
+
+                expect($validation->validate($data))->toEqual(Either::right(['foo' => '42', 'bar' => (float)37]));
             });
         });
 
