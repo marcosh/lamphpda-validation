@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Marcosh\LamPHPda\Validation\Instances\Validation;
 
+use Marcosh\LamPHPda\Instances\Either\MeetEitherSemigroup;
 use Marcosh\LamPHPda\Typeclass\Monoid;
 use Marcosh\LamPHPda\Typeclass\Semigroup;
-use Marcosh\LamPHPda\Validation\Instances\Either\JoinEitherSemigroup;
-use Marcosh\LamPHPda\Validation\Instances\Either\MeetEitherSemigroup;
 use Marcosh\LamPHPda\Validation\Validation;
 
 /**
@@ -22,14 +21,18 @@ use Marcosh\LamPHPda\Validation\Validation;
 final class AnyMonoid implements Monoid
 {
     /** @var Monoid<E> */
-    private $eMonoid;
+    private Monoid $eMonoid;
+
+    /** @var Semigroup<B> */
+    private Semigroup $bSemigroup;
 
     /**
      * @param Monoid<E> $eMonoid
      */
-    public function __construct(Monoid $eMonoid)
+    public function __construct(Monoid $eMonoid, Semigroup $bSemigroup)
     {
         $this->eMonoid = $eMonoid;
+        $this->bSemigroup = $bSemigroup;
     }
 
     /**
@@ -47,6 +50,6 @@ final class AnyMonoid implements Monoid
      */
     public function append($a, $b)
     {
-        return (new ValidationSemigroup(new MeetEitherSemigroup($this->eMonoid)))->append($a, $b);
+        return (new ValidationSemigroup(new MeetEitherSemigroup($this->eMonoid, $this->bSemigroup)))->append($a, $b);
     }
 }
