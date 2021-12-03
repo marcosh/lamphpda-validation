@@ -484,7 +484,7 @@ final class Validation implements DefaultProfunctor, HK1
                              */
                             fn($error) => $focusFailure($key, $error)
                         )
-                    ));
+                    ))->rmap(fn(array $a) => [$key => $a[$key]]);
                 },
                 array_keys($validators),
                 $validators

@@ -15,11 +15,14 @@ use Eris\Generator\SequenceGenerator;
 use Eris\Generator\StringGenerator;
 use Eris\Generator\SuchThatGenerator;
 use Exception;
+use Kahlan\Matcher;
 use Marcosh\LamPHPda\Either;
 use Marcosh\LamPHPda\Instances\FirstSemigroup;
 use Marcosh\LamPHPda\Instances\ListL\ConcatenationMonoid;
 use Marcosh\LamPHPda\Optics\Lens;
 use Marcosh\LamPHPda\Validation\Validation as V;
+
+Matcher::register('toBeEither', ToBeEither::class);
 
 $test = new ValidationTest();
 
@@ -33,7 +36,7 @@ describe('Validation', function () use ($test) {
                     new IntegerGenerator()
                 )->then(
                     function (int $i) {
-                        expect(V::valid()->validate($i))->toEqual(Either::right($i));
+                        expect(V::valid()->validate($i))->toBeEither(Either::right($i));
                     }
                 );
             });
@@ -45,7 +48,7 @@ describe('Validation', function () use ($test) {
                     new IntegerGenerator()
                 )->then(
                     function (int $i) {
-                        expect(V::invalid('nope')->validate($i))->toEqual(Either::left('nope'));
+                        expect(V::invalid('nope')->validate($i))->toBeEither(Either::left('nope'));
                     }
                 );
             });
@@ -57,21 +60,21 @@ describe('Validation', function () use ($test) {
             $validation1 = V::invalid('nope');
             $validation2 = V::valid();
 
-            expect($validation1->then($validation2)->validate(42))->toEqual(Either::left('nope'));
+            expect($validation1->then($validation2)->validate(42))->toBeEither(Either::left('nope'));
         });
 
         it('fails if the second validation fails', function () {
             $validation1 = V::valid();
             $validation2 = V::invalid('nope');
 
-            expect($validation1->then($validation2)->validate(42))->toEqual(Either::left('nope'));
+            expect($validation1->then($validation2)->validate(42))->toBeEither(Either::left('nope'));
         });
 
         it('succeeds if both validation succeed', function () {
             $validation1 = V::valid();
             $validation2 = V::valid();
 
-            expect($validation1->then($validation2)->validate(42))->toEqual(Either::right(42));
+            expect($validation1->then($validation2)->validate(42))->toBeEither(Either::right(42));
         });
     });
 
@@ -85,7 +88,7 @@ describe('Validation', function () use ($test) {
                     function (array $a) {
                         $a[42] = 42;
 
-                        expect(V::hasKey(42, 'nope')->validate($a))->toEqual(Either::right($a));
+                        expect(V::hasKey(42, 'nope')->validate($a))->toBeEither(Either::right($a));
                     }
                 );
             });
@@ -97,7 +100,7 @@ describe('Validation', function () use ($test) {
                     function (array $a) {
                         unset($a[3]);
 
-                        expect(V::hasKey(3, 'nope')->validate($a))->toEqual(Either::left('nope'));
+                        expect(V::hasKey(3, 'nope')->validate($a))->toBeEither(Either::left('nope'));
                     }
                 );
             });
@@ -109,7 +112,7 @@ describe('Validation', function () use ($test) {
                     new SequenceGenerator(new IntegerGenerator())
                 )->then(
                     function (array $a) {
-                        expect(V::isArray('nope')->validate($a))->toEqual(Either::right($a));
+                        expect(V::isArray('nope')->validate($a))->toBeEither(Either::right($a));
                     }
                 );
             });
@@ -119,7 +122,7 @@ describe('Validation', function () use ($test) {
                     new IntegerGenerator()
                 )->then(
                     function (int $i) {
-                        expect(V::isArray('nope')->validate($i))->toEqual(Either::left('nope'));
+                        expect(V::isArray('nope')->validate($i))->toBeEither(Either::left('nope'));
                     }
                 );
             });
@@ -131,7 +134,7 @@ describe('Validation', function () use ($test) {
                     new BooleanGenerator()
                 )->then(
                     function (bool $b) {
-                        expect(V::isBool('nope')->validate($b))->toEqual(Either::right($b));
+                        expect(V::isBool('nope')->validate($b))->toBeEither(Either::right($b));
                     }
                 );
             });
@@ -141,7 +144,7 @@ describe('Validation', function () use ($test) {
                     new IntegerGenerator()
                 )->then(
                     function (int $i) {
-                        expect(V::isBool('nope')->validate($i))->toEqual(Either::left('nope'));
+                        expect(V::isBool('nope')->validate($i))->toBeEither(Either::left('nope'));
                     }
                 );
             });
@@ -178,7 +181,7 @@ describe('Validation', function () use ($test) {
                     )
                 )->then(
                     function (string $i) {
-                        expect(V::isDate(fn ($_) => 'nope')->validate($i))->toEqual(Either::left('nope'));
+                        expect(V::isDate(fn ($_) => 'nope')->validate($i))->toBeEither(Either::left('nope'));
                     }
                 );
             });
@@ -190,7 +193,7 @@ describe('Validation', function () use ($test) {
                     new FloatGenerator()
                 )->then(
                     function (float $i) {
-                        expect(V::isFloat('nope')->validate($i))->toEqual(Either::right($i));
+                        expect(V::isFloat('nope')->validate($i))->toBeEither(Either::right($i));
                     }
                 );
             });
@@ -200,7 +203,7 @@ describe('Validation', function () use ($test) {
                     new StringGenerator()
                 )->then(
                     function (string $s) {
-                        expect(V::isFloat('nope')->validate($s))->toEqual(Either::left('nope'));
+                        expect(V::isFloat('nope')->validate($s))->toBeEither(Either::left('nope'));
                     }
                 );
             });
@@ -212,7 +215,7 @@ describe('Validation', function () use ($test) {
                     new IntegerGenerator()
                 )->then(
                     function (int $i) {
-                        expect(V::isInteger('nope')->validate($i))->toEqual(Either::right($i));
+                        expect(V::isInteger('nope')->validate($i))->toBeEither(Either::right($i));
                     }
                 );
             });
@@ -222,7 +225,7 @@ describe('Validation', function () use ($test) {
                     new StringGenerator()
                 )->then(
                     function (string $s) {
-                        expect(V::isInteger('nope')->validate($s))->toEqual(Either::left('nope'));
+                        expect(V::isInteger('nope')->validate($s))->toBeEither(Either::left('nope'));
                     }
                 );
             });
@@ -234,7 +237,7 @@ describe('Validation', function () use ($test) {
                     new StringGenerator()
                 )->then(
                     function (string $a) {
-                        expect(V::isString('nope')->validate($a))->toEqual(Either::right($a));
+                        expect(V::isString('nope')->validate($a))->toBeEither(Either::right($a));
                     }
                 );
             });
@@ -244,7 +247,7 @@ describe('Validation', function () use ($test) {
                     new IntegerGenerator()
                 )->then(
                     function (int $i) {
-                        expect(V::isString('nope')->validate($i))->toEqual(Either::left('nope'));
+                        expect(V::isString('nope')->validate($i))->toBeEither(Either::left('nope'));
                     }
                 );
             });
@@ -259,13 +262,13 @@ describe('Validation', function () use ($test) {
                     )
                 )->then(
                     function (array $s) {
-                        expect(V::nonEmptyArray('nope')->validate(($s)))->toEqual(Either::right($s));
+                        expect(V::nonEmptyArray('nope')->validate(($s)))->toBeEither(Either::right($s));
                     }
                 );
             });
 
             it('fails for the empty array', function () {
-                expect(V::nonEmptyArray('nope')->validate(([])))->toEqual(Either::left('nope'));
+                expect(V::nonEmptyArray('nope')->validate(([])))->toBeEither(Either::left('nope'));
             });
         });
 
@@ -278,13 +281,13 @@ describe('Validation', function () use ($test) {
                     )
                 )->then(
                     function (string $s) {
-                        expect(V::nonEmptyString('nope')->validate(($s)))->toEqual(Either::right($s));
+                        expect(V::nonEmptyString('nope')->validate(($s)))->toBeEither(Either::right($s));
                     }
                 );
             });
 
             it('fails for the empty string', function () {
-                expect(V::nonEmptyString('nope')->validate(('')))->toEqual(Either::left('nope'));
+                expect(V::nonEmptyString('nope')->validate(('')))->toBeEither(Either::left('nope'));
             });
         });
     });
@@ -306,7 +309,7 @@ describe('Validation', function () use ($test) {
                     new IntegerGenerator()
                 )->then(
                     function (int $i) use ($all) {
-                        expect($all->validate($i * 6))->toEqual(Either::right($i * 6));
+                        expect($all->validate($i * 6))->toBeEither(Either::right($i * 6));
                     }
                 );
             });
@@ -321,7 +324,7 @@ describe('Validation', function () use ($test) {
                     )
                 )->then(
                     function (int $i) use ($all) {
-                        expect($all->validate($i * 2))->toEqual(Either::left(['not multiple of 3']));
+                        expect($all->validate($i * 2))->toBeEither(Either::left(['not multiple of 3']));
                     }
                 );
             });
@@ -336,7 +339,7 @@ describe('Validation', function () use ($test) {
                     )
                 )->then(
                     function (int $i) use ($all) {
-                        expect($all->validate($i))->toEqual(Either::left(['not multiple of 2', 'not multiple of 3']));
+                        expect($all->validate($i))->toBeEither(Either::left(['not multiple of 2', 'not multiple of 3']));
                     }
                 );
             });
@@ -357,7 +360,7 @@ describe('Validation', function () use ($test) {
                     new IntegerGenerator()
                 )->then(
                     function (int $i) use ($any) {
-                        expect($any->validate($i * 6))->toEqual(Either::right($i * 6));
+                        expect($any->validate($i * 6))->toBeEither(Either::right($i * 6));
                     }
                 );
             });
@@ -372,7 +375,7 @@ describe('Validation', function () use ($test) {
                     )
                 )->then(
                     function (int $i) use ($any) {
-                        expect($any->validate($i * 2))->toEqual(Either::right($i * 2));
+                        expect($any->validate($i * 2))->toBeEither(Either::right($i * 2));
                     }
                 );
             });
@@ -387,7 +390,7 @@ describe('Validation', function () use ($test) {
                     )
                 )->then(
                     function (int $i) use ($any) {
-                        expect($any->validate($i))->toEqual(Either::left(['not multiple of 2', 'not multiple of 3']));
+                        expect($any->validate($i))->toBeEither(Either::left(['not multiple of 2', 'not multiple of 3']));
                     }
                 );
             });
@@ -401,7 +404,7 @@ describe('Validation', function () use ($test) {
                     function (array $a) {
                         $anyElement = V::anyElement(V::invalid('nope'), 'nope nope');
 
-                        expect($anyElement->validate($a))->toEqual(Either::left('nope nope'));
+                        expect($anyElement->validate($a))->toBeEither(Either::left('nope nope'));
                     }
                 );
             });
@@ -415,7 +418,7 @@ describe('Validation', function () use ($test) {
 
                         $a[] = 42;
 
-                        expect($anyElement->validate($a))->toEqual(Either::right($a));
+                        expect($anyElement->validate($a))->toBeEither(Either::right($a));
                     }
                 );
             });
@@ -440,7 +443,7 @@ describe('Validation', function () use ($test) {
                         'string' => new StringGenerator()
                     ])
                 )->then(function (array $a) use ($validation) {
-                    expect($validation->validate($a))->toEqual(Either::right($a));
+                    expect($validation->validate($a))->toBeEither(Either::right($a));
                 });
             });
 
@@ -448,7 +451,7 @@ describe('Validation', function () use ($test) {
                 $test->forAll(
                     new IntegerGenerator()
                 )->then(function (int $i) use ($validation) {
-                    expect($validation->validate($i))->toEqual(Either::left(['not an array']));
+                    expect($validation->validate($i))->toBeEither(Either::left(['not an array']));
                 });
             });
 
@@ -458,7 +461,7 @@ describe('Validation', function () use ($test) {
                         'int' => new IntegerGenerator()
                     ])
                 )->then(function (array $a) use ($validation) {
-                    expect($validation->validate($a))->toEqual(Either::left(['key string is missing']));
+                    expect($validation->validate($a))->toBeEither(Either::left(['key string is missing']));
                 });
             });
 
@@ -469,15 +472,18 @@ describe('Validation', function () use ($test) {
                         'string' => new IntegerGenerator()
                     ])
                 )->then(function (array $a) use ($validation) {
-                    expect($validation->validate($a))->toEqual(Either::left(['string' => ['string is not a string']]));
+                    expect($validation->validate($a))->toBeEither(Either::left(['string' => ['string is not a string']]));
                 });
             });
 
             it('preserves the type changing validations at the field level', function () use ($test) {
                 $validation = V::associativeArray(
                     [
+                        'aaa' => V::valid(),
                         'foo' => new V(fn(int $i) => Either::right((string)$i)),
-                        'bar' => new V(fn(int $i) => Either::right((float)$i))
+                        'bar' => new V(fn(int $i) => Either::right((float)$i)),
+                        'baz' => V::isInteger('not an integer'),
+                        'gaf' => V::isString('not a string')
                     ],
                     ['not an array'],
                     new ConcatenationMonoid(),
@@ -486,11 +492,21 @@ describe('Validation', function () use ($test) {
                 );
 
                 $data = [
+                    'aaa' => null,
                     'foo' => 42,
-                    'bar' => 37
+                    'bar' => 37,
+                    'baz' => 29,
+                    'gaf' => 'a string'
                 ];
 
-                expect($validation->validate($data))->toEqual(Either::right(['foo' => '42', 'bar' => (float)37]));
+                expect($validation->validate($data))
+                    ->toBeEither(Either::right([
+                        'aaa' => null,
+                        'foo' => '42',
+                        'bar' => (float)37,
+                        'baz' => 29,
+                        'gaf' => 'a string'
+                    ]));
             });
         });
 
@@ -507,7 +523,7 @@ describe('Validation', function () use ($test) {
 
                         $a[] = 42;
 
-                        expect($shouldNotContain42->validate($a))->toEqual(Either::left(['not 42']));
+                        expect($shouldNotContain42->validate($a))->toBeEither(Either::left(['not 42']));
                     }
                 );
             });
@@ -521,7 +537,7 @@ describe('Validation', function () use ($test) {
                         V::valid()
                     );
 
-                    expect($everyElementIsFine->validate($a))->toEqual(Either::right($a));
+                    expect($everyElementIsFine->validate($a))->toBeEither(Either::right($a));
                 });
             });
         });
@@ -549,14 +565,14 @@ describe('Validation', function () use ($test) {
                 $validation = V::invalid('nope');
 
                 expect(V::focus($lens, $validation)->validate(['foo' => 'a string']))
-                    ->toEqual(Either::left('nope'));
+                    ->toBeEither(Either::left('nope'));
             });
 
             it('succeeds if the validation on the focus succeeds', function () use ($lens) {
                 $validation = new V(fn(string $s) => Either::right(strlen($s)));
 
                 expect(V::focus($lens, $validation)->validate(['foo' => 'a string']))
-                    ->toEqual(Either::right(['foo' => 8]));
+                    ->toBeEither(Either::right(['foo' => 8]));
             });
         });
     });
