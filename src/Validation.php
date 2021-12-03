@@ -474,6 +474,7 @@ final class Validation implements DefaultProfunctor, HK1
                 function ($key, self $validator) use ($missingKey, $focusFailure) {
                     /**
                      * @psalm-suppress InvalidArgument
+                     * @psalm-suppress MixedArgumentTypeCoercion
                      */
                     return self::hasKey($key, $missingKey($key))->then(self::focus(
                         Lens::arrayKey($key),
