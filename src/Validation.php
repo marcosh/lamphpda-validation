@@ -305,6 +305,7 @@ final class Validation implements DefaultProfunctor, HK1
      */
     public static function isList($e): self
     {
+        /** @var Validation<array, F, list> */
         return self::satisfies(
             fn(array $a) => $a === array_values($a),
             $e
