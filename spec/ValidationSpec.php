@@ -231,6 +231,47 @@ describe('Validation', function () use ($test) {
             });
         });
 
+        describe('isList', function () use ($test) {
+            it('always succeeds for lists', function () use ($test) {
+                $test->forAll(
+                    new SequenceGenerator(new IntegerGenerator())
+                )->then(
+                    function (array $a) {
+                        expect(V::isList('nope')->validate($a))->toBeEither(Either::right($a));
+                    }
+                );
+            });
+
+            it('always fails for arrays with non integer keys', function () use ($test) {
+                $test->forAll(
+                    new StringGenerator(),
+                    new SequenceGenerator(new IntegerGenerator())
+                )->then(
+                    function (string $s, array $a) {
+                        $a[$s] = 0;
+
+                        expect(V::isList('nope')->validate($a))->toBeEither(Either::left('nope'));
+                    }
+                );
+            });
+
+            it('always fails for arrays with non consecutive keys', function () use ($test) {
+                $test->forAll(
+                    new SuchThatGenerator(
+                        fn (array $a) => !empty($a),
+                        new SequenceGenerator(new IntegerGenerator())
+                    )
+                )->then(
+                    function (array $a) {
+                        $maxKey = max(array_keys($a));
+                        $a[$maxKey + 2] = 0;
+
+                        expect(V::isList('nope')->validate($a))->toBeEither(Either::left('nope'));
+                    }
+                );
+            });
+        });
+
         describe('isString', function () use ($test) {
             it('always succeeds for strings', function () use ($test) {
                 $test->forAll(
