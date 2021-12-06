@@ -244,7 +244,10 @@ describe('Validation', function () use ($test) {
 
             it('always fails for arrays with non integer keys', function () use ($test) {
                 $test->forAll(
-                    new StringGenerator(),
+                    new SuchThatGenerator(
+                        fn(string $s) => !is_numeric($s),
+                        new StringGenerator()
+                    ),
                     new SequenceGenerator(new IntegerGenerator())
                 )->then(
                     function (string $s, array $a) {
