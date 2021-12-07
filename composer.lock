@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3ef37b64bc99d1c02b0f8eae401047f5",
+    "content-hash": "092c67fba3178b7aaf6dc56db7d65d39",
     "packages": [
         {
             "name": "amphp/amp",
@@ -487,23 +487,23 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/marcosh/lamphpda.git",
-                "reference": "bc7ce625bf137da3c6ea7e4301e9a39607d9beec"
+                "reference": "c79fbbf66bee860a36cceab9c2186c7af07e1b36"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/marcosh/lamphpda/zipball/bc7ce625bf137da3c6ea7e4301e9a39607d9beec",
-                "reference": "bc7ce625bf137da3c6ea7e4301e9a39607d9beec",
+                "url": "https://api.github.com/repos/marcosh/lamphpda/zipball/c79fbbf66bee860a36cceab9c2186c7af07e1b36",
+                "reference": "c79fbbf66bee860a36cceab9c2186c7af07e1b36",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.4|^8.0",
+                "php": "^7.4 || ^8.0",
                 "roave/you-are-using-it-wrong": "^1.8"
             },
             "require-dev": {
                 "kahlan/kahlan": "^5.1",
-                "maglnet/composer-require-checker": "^3.5",
+                "maglnet/composer-require-checker": "^3.7",
                 "squizlabs/php_codesniffer": "^3.6",
-                "vimeo/psalm": "4.12"
+                "vimeo/psalm": "^4.14"
             },
             "default-branch": true,
             "type": "library",
@@ -523,11 +523,20 @@
                 }
             ],
             "description": "A collection of functional programming data structures",
+            "homepage": "https://github.com/marcosh/lamphpda",
+            "keywords": [
+                "Applicative",
+                "data structures",
+                "functional programming",
+                "functor",
+                "monad",
+                "monoid"
+            ],
             "support": {
                 "issues": "https://github.com/marcosh/lamphpda/issues",
                 "source": "https://github.com/marcosh/lamphpda/tree/master"
             },
-            "time": "2021-12-02T14:25:01+00:00"
+            "time": "2021-12-07T16:40:29+00:00"
         },
         {
             "name": "marcosh/lamphpda-optics",
@@ -1873,16 +1882,16 @@
         },
         {
             "name": "vimeo/psalm",
-            "version": "4.12.0",
+            "version": "v4.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vimeo/psalm.git",
-                "reference": "e42bc4a23f67acba28a23bb09c348e2ff38a1d87"
+                "reference": "14dcbc908ab2625cd7a74258ee6c740cbecc6140"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vimeo/psalm/zipball/e42bc4a23f67acba28a23bb09c348e2ff38a1d87",
-                "reference": "e42bc4a23f67acba28a23bb09c348e2ff38a1d87",
+                "url": "https://api.github.com/repos/vimeo/psalm/zipball/14dcbc908ab2625cd7a74258ee6c740cbecc6140",
+                "reference": "14dcbc908ab2625cd7a74258ee6c740cbecc6140",
                 "shasum": ""
             },
             "require": {
@@ -1928,7 +1937,8 @@
                 "weirdan/prophecy-shim": "^1.0 || ^2.0"
             },
             "suggest": {
-                "ext-igbinary": "^2.0.5"
+                "ext-curl": "In order to send data to shepherd",
+                "ext-igbinary": "^2.0.5 is required, used to serialize caching data"
             },
             "bin": [
                 "psalm",
@@ -1972,9 +1982,9 @@
             ],
             "support": {
                 "issues": "https://github.com/vimeo/psalm/issues",
-                "source": "https://github.com/vimeo/psalm/tree/4.12.0"
+                "source": "https://github.com/vimeo/psalm/tree/v4.14.0"
             },
-            "time": "2021-11-06T10:31:17+00:00"
+            "time": "2021-12-04T17:49:24+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -2334,7 +2344,7 @@
         "marcosh/lamphpda-optics": 20
     },
     "prefer-stable": false,
-    "prefer-lowest": true,
+    "prefer-lowest": false,
     "platform": {
         "php": "^7.4|^8.0"
     },
