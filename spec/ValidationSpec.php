@@ -19,6 +19,7 @@ use Kahlan\Matcher;
 use Marcosh\LamPHPda\Either;
 use Marcosh\LamPHPda\Instances\FirstSemigroup;
 use Marcosh\LamPHPda\Instances\ListL\ConcatenationMonoid;
+use Marcosh\LamPHPda\Instances\String\ConcatenationMonoid as StringConcatenationMonoid;
 use Marcosh\LamPHPda\Optics\Lens;
 use Marcosh\LamPHPda\Validation\Validation as V;
 
@@ -75,6 +76,40 @@ describe('Validation', function () use ($test) {
             $validation2 = V::valid();
 
             expect($validation1->then($validation2)->validate(42))->toBeEither(Either::right(42));
+        });
+    });
+
+    describe('Or', function () {
+       it('fails if both validations fail combining the errors', function () {
+           $validation1 = V::invalid('nope');
+           $validation2 = V::invalid('epon');
+
+           expect($validation1->or(new StringConcatenationMonoid(), $validation2)->validate(42))
+               ->toBeEither(Either::left('nopeepon'));
+       });
+
+        it('succeeds if the first validation succeeds', function () {
+            $validation1 = V::valid();
+            $validation2 = V::invalid('nope');
+
+            expect($validation1->or(new StringConcatenationMonoid(), $validation2)->validate(42))
+                ->toBeEither(Either::right(42));
+        });
+
+        it('succeeds if the second validation succeeds', function () {
+            $validation1 = V::invalid('nope');
+            $validation2 = V::valid();
+
+            expect($validation1->or(new StringConcatenationMonoid(), $validation2)->validate(42))
+                ->toBeEither(Either::right(42));
+        });
+
+        it('succeeds if both validations succeed', function () {
+            $validation1 = V::valid();
+            $validation2 = V::valid();
+
+            expect($validation1->or(new StringConcatenationMonoid(), $validation2)->validate(42))
+                ->toBeEither(Either::right(42));
         });
     });
 
