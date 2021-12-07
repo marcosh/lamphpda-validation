@@ -27,6 +27,7 @@ use Marcosh\LamPHPda\Validation\Brand\ValidationBrand;
 use Marcosh\LamPHPda\Validation\Brand\ValidationBrand2;
 use Marcosh\LamPHPda\Validation\Instances\Validation\AllMonoid;
 use Marcosh\LamPHPda\Validation\Instances\Validation\AnyMonoid;
+use Marcosh\LamPHPda\Validation\Instances\Validation\ValidationAlternative;
 use Marcosh\LamPHPda\Validation\Instances\Validation\ValidationProfunctor;
 
 /**
@@ -166,6 +167,15 @@ final class Validation implements DefaultProfunctor, HK1
              */
             fn($a) => $this->validate($a)->mapLeft($f)
         );
+    }
+
+    /**
+     * @param Validation<A, E, B> $that
+     * @return Validation<A, E, B>
+     */
+    public function or(Monoid $eMonoid, Validation $that): self
+    {
+        return (new ValidationAlternative($eMonoid))->alt($this, $that);
     }
 
     // TRIVIAL COMBINATORS
