@@ -326,6 +326,24 @@ final class Validation implements DefaultProfunctor, HK1
      * @template C
      * @template F
      * @param F $e
+     * @return Validation<array, F, null>
+     */
+    public static function isNull($e): self
+    {
+        /** @var Validation<array, F, null> */
+        return self::satisfies(
+            /**
+             * @param mixed $a
+             */
+            fn($a) => null === $a,
+            $e
+        );
+    }
+
+    /**
+     * @template C
+     * @template F
+     * @param F $e
      * @return (C is string ? Validation<C, F, C> : Validation<C, F, string>)
      */
     public static function isString($e): self
