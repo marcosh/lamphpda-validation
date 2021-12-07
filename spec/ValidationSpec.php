@@ -310,6 +310,22 @@ describe('Validation', function () use ($test) {
             });
         });
 
+        describe('isNull', function () use ($test) {
+            it('always succeeds for null', function () {
+                expect(V::isNull('nope')->validate(null))->toBeEither(Either::right(null));
+            });
+
+            it('always fails for integers', function () use ($test) {
+                $test->forAll(
+                    new IntegerGenerator()
+                )->then(
+                    function (int $i) {
+                        expect(V::isNull('nope')->validate($i))->toBeEither(Either::left('nope'));
+                    }
+                );
+            });
+        });
+
         describe('isString', function () use ($test) {
             it('always succeeds for strings', function () use ($test) {
                 $test->forAll(
