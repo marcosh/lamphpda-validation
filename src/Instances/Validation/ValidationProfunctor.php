@@ -23,8 +23,8 @@ final class ValidationProfunctor implements Profunctor
      * @template C
      * @template D
      * @template E
-     * @param callable(A): B $f
-     * @param callable(C): D $g
+     * @param pure-callable(A): B $f
+     * @param pure-callable(C): D $g
      * @param HK2<ValidationBrand2<E>, B, C> $a
      * @return Validation<A, E, D>
      */
