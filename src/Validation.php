@@ -628,4 +628,35 @@ final class Validation implements DefaultProfunctor, HK1
             $validationMonoid->mempty()
         );
     }
+
+    /**
+     * @template C
+     * @template F
+     * @template D
+     * @param Monoid<F> $eMonoid
+     * @param F $e
+     * @param Validation<C, F, D> $validation
+     * @return Validation<C, F, D|null>
+     */
+    public static function nullable(Monoid $eMonoid, $e, Validation $validation): self
+    {
+        $f =
+            /**
+             * @param D $d
+             * @return D|null
+             */
+            fn($d) => $d;
+
+        $g =
+            /**
+             * @param null $n
+             * @return D|null
+             */
+            fn($n) => $n;
+
+        /** @var Validation<C, F, D|null> $nullValidation */
+        $nullValidation = self::isNull($e)->rmap($g);
+
+        return $validation->rmap($f)->or($eMonoid, $nullValidation);
+    }
 }
