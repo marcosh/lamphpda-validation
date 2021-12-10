@@ -670,5 +670,29 @@ describe('Validation', function () use ($test) {
                     ->toBeEither(Either::right(['foo' => 8]));
             });
         });
+
+        describe('nullable', function () use ($test) {
+            $validation = V::nullable(new ConcatenationMonoid(), ['not null'], V::isInteger(['not an integer']));
+
+            it('fails if the value does not satisfy the validation', function () use ($test, $validation) {
+                $test->forAll(
+                    new StringGenerator()
+                )->then(function (string $s) use ($validation) {
+                    expect($validation->validate($s))->toBeEither(Either::left(['not null', 'not an integer']));
+                });
+            });
+
+            it('succeeds if the value satisfies the validation', function () use ($test, $validation) {
+                $test->forAll(
+                    new IntegerGenerator()
+                )->then(function (int $i) use ($validation) {
+                    expect($validation->validate($i))->toBeEither(Either::right($i));
+                });
+            });
+
+            it('succeeds if the value is null', function () use ($validation) {
+                expect($validation->validate(null))->toBeEither(Either::right(null));
+            });
+        });
     });
 });
