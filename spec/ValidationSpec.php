@@ -80,13 +80,13 @@ describe('Validation', function () use ($test) {
     });
 
     describe('Or', function () {
-       it('fails if both validations fail combining the errors', function () {
-           $validation1 = V::invalid('nope');
-           $validation2 = V::invalid('epon');
+        it('fails if both validations fail combining the errors', function () {
+            $validation1 = V::invalid('nope');
+            $validation2 = V::invalid('epon');
 
-           expect($validation1->or(new StringConcatenationMonoid(), $validation2)->validate(42))
+            expect($validation1->or(new StringConcatenationMonoid(), $validation2)->validate(42))
                ->toBeEither(Either::left('nopeepon'));
-       });
+        });
 
         it('succeeds if the first validation succeeds', function () {
             $validation1 = V::valid();
