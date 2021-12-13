@@ -34,8 +34,8 @@ use Marcosh\LamPHPda\Validation\Instances\Validation\ValidationProfunctor;
  * a validation is nothing else that a function from A to Either<E, B>
  *
  * @template A raw input to the validation
- * @template E potential validation error
- * @template B parsed validation result
+ * @template-covariant E potential validation error
+ * @template-covariant B parsed validation result
  *
  * @implements DefaultProfunctor<ValidationBrand2<E>, A, B>
  * @implements HK1<ValidationBrand<A, E>, B>
