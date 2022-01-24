@@ -10,7 +10,11 @@ use Marcosh\LamPHPda\Instances\ListL\ConcatenationMonoid;
 use Marcosh\LamPHPda\Validation\Validation;
 use Marcosh\LamPHPda\Validation\Validation as V;
 
-final class TinValidator {
+final class TinValidator
+{
+    /** @var array<string, int> */
+    private static array $dateType = [];
+
     public static function isFollowBelgiumRule1(string $tin): bool
     {
         $divisionRemainderBy97 = (int) (substr($tin, 0, 9)) % 97;
@@ -27,6 +31,10 @@ final class TinValidator {
 
     public static function getDateType(string $tin): int
     {
+        if (array_key_exists($tin, self::$dateType)) {
+            return self::$dateType[$tin];
+        }
+
         $year = (int) (substr($tin, 0, 2));
         $month = (int) (substr($tin, 2, 2));
         $day = (int) (substr($tin, 4, 2));
@@ -35,18 +43,18 @@ final class TinValidator {
         $y2 = checkdate($month, $day, 2000 + $year);
 
         if (0 === $day || 0 === $month || ($y1 && $y2)) {
-            return 3;
+            $dateType = 3;
+        } elseif ($y1) {
+            $dateType = 1;
+        } elseif ($y2) {
+            $dateType = 2;
+        } else {
+            $dateType = 0;
         }
 
-        if ($y1) {
-            return 1;
-        }
+        self::$dateType[$tin] = $dateType;
 
-        if ($y2) {
-            return 2;
-        }
-
-        return 0;
+        return $dateType;
     }
 
     public static function hasValidDateType(string $tin): bool
