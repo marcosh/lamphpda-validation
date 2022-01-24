@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Marcosh\LamPHPda\ValidationSpec;
 
+use Closure;
+use Generator;
 use Marcosh\LamPHPda\Instances\ListL\ConcatenationMonoid;
 use Marcosh\LamPHPda\Validation\Validation;
 use Marcosh\LamPHPda\Validation\Validation as V;
@@ -78,23 +80,25 @@ final class TinValidator {
         return 1 === preg_match(sprintf('/%s/', $pattern), $tin);
     }
 
-    public static function Belgian(): Validation
+    public static function belgian(): Validation
     {
-        $r0 = V::isString(['TIN type must be a string.'])
+        $r = V::isString(['TIN type must be a string.'])
             ->then(V::satisfies([TinValidator::class, 'hasValidLength'], ['TIN length is invalid.']))
             ->then(V::satisfies([TinValidator::class, 'hasValidPattern'], ['TIN pattern is invalid.']))
             ->then(V::satisfies([TinValidator::class, 'hasValidDateType'], ['TIN date is invalid.']));
 
-        $r1 = $r0->then(V::satisfies([TinValidator::class, 'followRule1'], ['TIN validation of rule 1 failed.']));
-        $r2 = $r0->then(V::satisfies([TinValidator::class, 'followRule2'], ['TIN validation of rule 2 failed.']));
+        // Branch 1
+        $br1 = V::satisfies([TinValidator::class, 'followRule1'], ['TIN validation of rule 1 failed.']);
+        // Branch 2
+        $br2 = V::satisfies([TinValidator::class, 'followRule2'], ['TIN validation of rule 2 failed.']);
 
-        return $r1->or(new ConcatenationMonoid(), $r2);
+        return $r->then($br1->or(new ConcatenationMonoid(), $br2));
     }
 }
 
 describe('Use Case Validation Spec', function () {
     describe('Validate Belgian TIN numbers', function () {
-        $testCases = function () {
+        $testCases = function (): Generator {
             yield ['Invalidate TIN number having wrong type', 123456, 'TIN type must be a string.'];
             yield ['Invalidate TIN number having invalid length', '0123456789', 'TIN length is invalid.'];
             yield ['Invalidate TIN number having invalid pattern', 'wwwwwwwwwww', 'TIN pattern is invalid.'];
@@ -104,7 +108,7 @@ describe('Use Case Validation Spec', function () {
         };
 
         foreach ($testCases() as list($testCase, $tinNumber, $expected)) {
-            it($testCase, function () use ($tinNumber, $expected) {
+            it($testCase, function () use ($tinNumber, $expected): void {
                 $ifLeft = static fn (array $i): string => current($i);
                 $ifRight = static fn (string $i): string => $i;
 
