@@ -6,6 +6,7 @@ namespace Marcosh\LamPHPda\ValidationSpec;
 
 use Closure;
 use Generator;
+use Marcosh\LamPHPda\Either;
 use Marcosh\LamPHPda\Instances\ListL\ConcatenationMonoid;
 use Marcosh\LamPHPda\Validation\Validation;
 use Marcosh\LamPHPda\Validation\Validation as V;
@@ -107,23 +108,16 @@ final class TinValidator
 describe('Use Case Validation Spec', function () {
     describe('Validate Belgian TIN numbers', function () {
         $testCases = function (): Generator {
-            yield ['Invalidate TIN number having wrong type', 123456, 'TIN type must be a string.'];
-            yield ['Invalidate TIN number having invalid length', '0123456789', 'TIN length is invalid.'];
-            yield ['Invalidate TIN number having invalid pattern', 'wwwwwwwwwww', 'TIN pattern is invalid.'];
-            yield ['Invalidate TIN number having invalid date', '81023011101', 'TIN date is invalid.'];
-            yield ['Validate TIN number', '01062624339', '01062624339'];
-            yield ['Invalidate TIN number', '81092499999', 'TIN validation of rule 2 failed.'];
+            yield ['Invalidate TIN number having wrong type', 123456, Either::left(['TIN type must be a string.'])];
+            yield ['Invalidate TIN number having invalid length', '0123456789', Either::left(['TIN length is invalid.'])];
+            yield ['Invalidate TIN number having invalid pattern', 'wwwwwwwwwww', Either::left(['TIN pattern is invalid.'])];
+            yield ['Invalidate TIN number having invalid date', '81023011101', Either::left(['TIN date is invalid.'])];
+            yield ['Validate TIN number', '01062624339', Either::right('01062624339')];
+            yield ['Invalidate TIN number', '81092499999', Either::left(['TIN validation of rule 2 failed.', 'TIN validation of rule 1 failed.'])];
         };
 
         foreach ($testCases() as list($testCase, $tinNumber, $expected)) {
-            it($testCase, function () use ($tinNumber, $expected): void {
-                $ifLeft = static fn (array $i): string => current($i);
-                $ifRight = static fn (string $i): string => $i;
-
-                expect(
-                    TinValidator::Belgian()->validate($tinNumber)->eval($ifLeft, $ifRight)
-                )->toBe($expected);
-            });
+            it($testCase, fn() => expect(TinValidator::Belgian()->validate($tinNumber))->toEqual($expected));
         }
     });
 });
