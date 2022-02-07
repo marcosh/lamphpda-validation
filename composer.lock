@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "092c67fba3178b7aaf6dc56db7d65d39",
+    "content-hash": "c94fe5058ad65c0066d34075a783f214",
     "packages": [
         {
             "name": "amphp/amp",
@@ -483,16 +483,16 @@
         },
         {
             "name": "marcosh/lamphpda",
-            "version": "dev-master",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/marcosh/lamphpda.git",
-                "reference": "4cc6a722f44cd3c59066d672de572bfa01654b9f"
+                "reference": "c02c57f61e3717e820d41bfb9fb9756662efa6ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/marcosh/lamphpda/zipball/4cc6a722f44cd3c59066d672de572bfa01654b9f",
-                "reference": "4cc6a722f44cd3c59066d672de572bfa01654b9f",
+                "url": "https://api.github.com/repos/marcosh/lamphpda/zipball/c02c57f61e3717e820d41bfb9fb9756662efa6ed",
+                "reference": "c02c57f61e3717e820d41bfb9fb9756662efa6ed",
                 "shasum": ""
             },
             "require": {
@@ -500,12 +500,11 @@
                 "roave/you-are-using-it-wrong": "^1.8"
             },
             "require-dev": {
-                "kahlan/kahlan": "^5.1",
-                "maglnet/composer-require-checker": "^3.7",
-                "squizlabs/php_codesniffer": "^3.6",
-                "vimeo/psalm": "^4.14"
+                "friendsofphp/php-cs-fixer": "^3.5",
+                "kahlan/kahlan": "^5.2",
+                "maglnet/composer-require-checker": "^3.8",
+                "vimeo/psalm": "^4.19"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -534,9 +533,9 @@
             ],
             "support": {
                 "issues": "https://github.com/marcosh/lamphpda/issues",
-                "source": "https://github.com/marcosh/lamphpda/tree/master"
+                "source": "https://github.com/marcosh/lamphpda/tree/v1.0.0"
             },
-            "time": "2021-12-13T14:46:13+00:00"
+            "time": "2022-02-07T16:27:31+00:00"
         },
         {
             "name": "marcosh/lamphpda-optics",
@@ -544,16 +543,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/marcosh/lamphpda-optics.git",
-                "reference": "1700669058dd441b855dd0fa36d5d586089408e7"
+                "reference": "01ca38d8fb1d58aacf4b79dc154ebca03c1d4432"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/marcosh/lamphpda-optics/zipball/1700669058dd441b855dd0fa36d5d586089408e7",
-                "reference": "1700669058dd441b855dd0fa36d5d586089408e7",
+                "url": "https://api.github.com/repos/marcosh/lamphpda-optics/zipball/01ca38d8fb1d58aacf4b79dc154ebca03c1d4432",
+                "reference": "01ca38d8fb1d58aacf4b79dc154ebca03c1d4432",
                 "shasum": ""
             },
             "require": {
-                "marcosh/lamphpda": "dev-master",
+                "marcosh/lamphpda": "^1.0",
                 "php": "^7.4|^8.0"
             },
             "require-dev": {
@@ -584,7 +583,7 @@
                 "issues": "https://github.com/marcosh/lamphpda-optics/issues",
                 "source": "https://github.com/marcosh/lamphpda-optics/tree/master"
             },
-            "time": "2021-11-26T16:33:07+00:00"
+            "time": "2022-02-07T16:56:39+00:00"
         },
         {
             "name": "netresearch/jsonmapper",
@@ -2340,11 +2339,10 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "marcosh/lamphpda": 20,
         "marcosh/lamphpda-optics": 20
     },
     "prefer-stable": false,
-    "prefer-lowest": true,
+    "prefer-lowest": false,
     "platform": {
         "php": "^7.4|^8.0"
     },
