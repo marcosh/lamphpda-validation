@@ -35,7 +35,7 @@ final class ValidationApply implements Apply
     /**
      * @template A
      * @template B
-     * @param pure-callable(A): B $f
+     * @param callable(A): B $f
      * @param HK1<ValidationBrand<C, E>, A> $a
      * @return Validation<C, E, B>
      *

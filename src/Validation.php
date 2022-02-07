@@ -90,8 +90,8 @@ final class Validation implements DefaultProfunctor, HK1
     /**
      * @template C
      * @template D
-     * @param pure-callable(C): A $f
-     * @param pure-callable(B): D $g
+     * @param callable(C): A $f
+     * @param callable(B): D $g
      * @return Validation<C, E, D>
      */
     public function diMap(callable $f, callable $g): self
@@ -101,7 +101,7 @@ final class Validation implements DefaultProfunctor, HK1
 
     /**
      * @template C
-     * @param pure-callable(C): A $f
+     * @param callable(C): A $f
      * @return Validation<C, E, B>
      */
     public function lmap(callable $f): self
@@ -111,7 +111,7 @@ final class Validation implements DefaultProfunctor, HK1
 
     /**
      * @template D
-     * @param pure-callable(B): D $g
+     * @param callable(B): D $g
      * @return Validation<A, E, D>
      */
     public function rmap(callable $g): self
