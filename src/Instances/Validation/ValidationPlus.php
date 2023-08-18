@@ -4,23 +4,20 @@ declare(strict_types=1);
 
 namespace Marcosh\LamPHPda\Validation\Instances\Validation;
 
-use Marcosh\LamPHPda\Either;
 use Marcosh\LamPHPda\HK\HK1;
-use Marcosh\LamPHPda\Instances\Either\EitherAlternative;
-use Marcosh\LamPHPda\Instances\Either\EitherApplicative;
-use Marcosh\LamPHPda\Typeclass\Alternative;
 use Marcosh\LamPHPda\Typeclass\Monoid;
+use Marcosh\LamPHPda\Typeclass\Plus;
 use Marcosh\LamPHPda\Validation\Brand\ValidationBrand;
 use Marcosh\LamPHPda\Validation\Validation;
 
 /**
  * @template C
  * @template E
- * @implements Alternative<ValidationBrand<C, E>>
+ * @implements Plus<ValidationBrand<C, E>>
  *
  * @psalm-immutable
  */
-final class ValidationAlternative implements Alternative
+class ValidationPlus implements Plus
 {
     /** @var Monoid<E> */
     private Monoid $eMonoid;
@@ -51,47 +48,13 @@ final class ValidationAlternative implements Alternative
 
     /**
      * @template A
-     * @template B
-     * @param HK1<ValidationBrand<C, E>, callable(A): B> $f
-     * @param HK1<ValidationBrand<C, E>, A> $a
-     * @return Validation<C, E, B>
-     *
-     * @psalm-suppress ImplementedReturnTypeMismatch
-     */
-    public function apply(HK1 $f, HK1 $a): Validation
-    {
-        return (new ValidationApply($this->eMonoid))->apply($f, $a);
-    }
-
-    /**
-     * @template A
-     * @param A $a
-     * @return Validation<C, E, A>
-     *
-     * @psalm-pure
-     *
-     * @psalm-suppress ImplementedReturnTypeMismatch
-     */
-    public function pure($a): Validation
-    {
-        return new Validation(
-        /**
-         * @param C $_
-         * @return Either<E, A>
-         */
-            fn($_) => (new EitherApplicative())->pure($a)
-        );
-    }
-
-    /**
-     * @template A
      * @return Validation<C, E, A>
      *
      * @psalm-suppress ImplementedReturnTypeMismatch
      */
     public function empty(): Validation
     {
-        return (new ValidationPlus($this->eMonoid))->empty();
+        return Validation::invalid($this->eMonoid->mempty());
     }
 
     /**
