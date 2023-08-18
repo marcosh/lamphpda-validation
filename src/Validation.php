@@ -27,7 +27,7 @@ use Marcosh\LamPHPda\Validation\Brand\ValidationBrand;
 use Marcosh\LamPHPda\Validation\Brand\ValidationBrand2;
 use Marcosh\LamPHPda\Validation\Instances\Validation\AllMonoid;
 use Marcosh\LamPHPda\Validation\Instances\Validation\AnyMonoid;
-use Marcosh\LamPHPda\Validation\Instances\Validation\ValidationAlternative;
+use Marcosh\LamPHPda\Validation\Instances\Validation\ValidationAlt;
 use Marcosh\LamPHPda\Validation\Instances\Validation\ValidationProfunctor;
 
 /**
@@ -173,9 +173,9 @@ final class Validation implements DefaultProfunctor, HK1
      * @param Validation<A, E, B> $that
      * @return Validation<A, E, B>
      */
-    public function or(Monoid $eMonoid, Validation $that): self
+    public function or(Semigroup $eSemigroup, Validation $that): self
     {
-        return (new ValidationAlternative($eMonoid))->alt($this, $that);
+        return (new ValidationAlt($eSemigroup))->alt($this, $that);
     }
 
     // TRIVIAL COMBINATORS
@@ -633,12 +633,12 @@ final class Validation implements DefaultProfunctor, HK1
      * @template C
      * @template F
      * @template D
-     * @param Monoid<F> $eMonoid
+     * @param Semigroup<F> $eSemigroup
      * @param F $e
      * @param Validation<C, F, D> $validation
      * @return Validation<C, F, D|null>
      */
-    public static function nullable(Monoid $eMonoid, $e, Validation $validation): self
+    public static function nullable(Semigroup $eSemigroup, $e, Validation $validation): self
     {
         $f =
             /**
@@ -657,6 +657,6 @@ final class Validation implements DefaultProfunctor, HK1
         /** @var Validation<C, F, D|null> $nullValidation */
         $nullValidation = self::isNull($e)->rmap($g);
 
-        return $validation->rmap($f)->or($eMonoid, $nullValidation);
+        return $validation->rmap($f)->or($eSemigroup, $nullValidation);
     }
 }
