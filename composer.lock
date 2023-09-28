@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e81515c81da257d9d63725d01213d347",
+    "content-hash": "2318fdb2a07bddd363463c75a7889cdd",
     "packages": [
         {
             "name": "giorgiosironi/eris",
@@ -69,16 +69,16 @@
         },
         {
             "name": "marcosh/lamphpda",
-            "version": "v1.3.0",
+            "version": "v1.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/marcosh/lamphpda.git",
-                "reference": "5dcab2a2ce721eb121c4d3639aa9ef6340dfe915"
+                "reference": "04140630c5f7665d6a88aa364c91c914825f63bc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/marcosh/lamphpda/zipball/5dcab2a2ce721eb121c4d3639aa9ef6340dfe915",
-                "reference": "5dcab2a2ce721eb121c4d3639aa9ef6340dfe915",
+                "url": "https://api.github.com/repos/marcosh/lamphpda/zipball/04140630c5f7665d6a88aa364c91c914825f63bc",
+                "reference": "04140630c5f7665d6a88aa364c91c914825f63bc",
                 "shasum": ""
             },
             "require": {
@@ -118,9 +118,9 @@
             ],
             "support": {
                 "issues": "https://github.com/marcosh/lamphpda/issues",
-                "source": "https://github.com/marcosh/lamphpda/tree/v1.3.0"
+                "source": "https://github.com/marcosh/lamphpda/tree/v1.4.1"
             },
-            "time": "2023-08-18T07:59:59+00:00"
+            "time": "2023-09-28T07:44:53+00:00"
         },
         {
             "name": "marcosh/lamphpda-optics",
