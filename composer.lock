@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2318fdb2a07bddd363463c75a7889cdd",
+    "content-hash": "2bab938c646b188f32591e2ccf7d09c8",
     "packages": [
         {
             "name": "giorgiosironi/eris",

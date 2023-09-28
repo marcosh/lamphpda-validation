@@ -8,12 +8,15 @@ use DateTime;
 use DateTimeImmutable;
 use Eris\Generator\AssociativeArrayGenerator;
 use Eris\Generator\BooleanGenerator;
+use Eris\Generator\BindGenerator;
+use Eris\Generator\ConstantGenerator;
 use Eris\Generator\DateGenerator;
 use Eris\Generator\FloatGenerator;
 use Eris\Generator\IntegerGenerator;
 use Eris\Generator\SequenceGenerator;
 use Eris\Generator\StringGenerator;
 use Eris\Generator\SuchThatGenerator;
+use Eris\Generator\TupleGenerator;
 use Exception;
 use Kahlan\Matcher;
 use Marcosh\LamPHPda\Either;
@@ -148,6 +151,48 @@ describe('Validation', function () use ($test) {
     });
 
     describe('Basic validators', function () use ($test) {
+
+        describe('is', function () use ($test) {
+            it('suceeds if the input corresponds to the value', function () use ($test) {
+                $test->forAll(
+                    new IntegerGenerator()
+                )->then(
+                    function (int $i) {
+                        expect(V::is($i, 'nope')->validate($i))->toBeEither(Either::right($i));
+                    }
+                );
+            });
+
+            it('fails comparing a string and an integer', function () use ($test) {
+                $test->forAll(
+                    new IntegerGenerator(),
+                    new StringGenerator()
+                )->then(
+                    function (int $i, string $s) {
+                        expect(V::is($i, 'nope')->validate($s))->toBeEither(Either::left('nope'));
+                    }
+                );
+            });
+
+            it('fails comparing two different integers', function () use ($test) {
+                $test->forAll(
+                    new BindGenerator(
+                        new IntegerGenerator(),
+                        function (int $i) {
+                            return new TupleGenerator([
+                                new ConstantGenerator($i),
+                                new SuchThatGenerator(
+                                    fn (int $j) => $j != $i,
+                                    new IntegerGenerator()
+                                )
+                            ]);
+                        }
+                    )
+                )->then(function ($tuple) {
+                    expect(V::is($tuple[0], 'nope')->validate($tuple[1]))->toBeEither(Either::left('nope'));
+                });
+            });
+        });
 
         describe('hasKey', function () use ($test) {
             it('succeeds if the array has the key', function () use ($test) {

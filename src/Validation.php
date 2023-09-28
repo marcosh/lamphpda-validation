@@ -235,6 +235,24 @@ final class Validation implements DefaultProfunctor, HK1
     // BASIC VALIDATORS
 
     /**
+     * @template C
+     * @template F
+     * @param C $a
+     * @param F $e
+     * @return Validation<mixed, F, C>
+     */
+    public static function is($a, $e): self
+    {
+        return self::satisfies(
+            /**
+             * @param mixed $b
+             */
+            fn ($b) => $b === $a,
+            $e
+        );
+    }
+
+    /**
      * @template C of array
      * @template F
      * @param array-key $key
