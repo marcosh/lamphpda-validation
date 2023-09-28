@@ -113,6 +113,40 @@ describe('Validation', function () use ($test) {
         });
     });
 
+    describe('And', function () {
+        it('fails if both validations fail combining the errors', function () {
+            $validation1 = V::invalid('nope');
+            $validation2 = V::invalid('epon');
+
+            expect($validation1->and(new StringConcatenationMonoid(), $validation2)->validate(42))
+               ->toBeEither(Either::left('nopeepon'));
+        });
+
+        it('fails if the second validation fails', function () {
+            $validation1 = V::valid();
+            $validation2 = V::invalid('nope');
+
+            expect($validation1->and(new StringConcatenationMonoid(), $validation2)->validate(42))
+                ->toBeEither(Either::left('nope'));
+        });
+
+        it('fails if the first validation fails', function () {
+            $validation1 = V::invalid('nope');
+            $validation2 = V::valid();
+
+            expect($validation1->and(new StringConcatenationMonoid(), $validation2)->validate(42))
+                ->toBeEither(Either::left('nope'));
+        });
+
+        it('succeeds if both validations succeed', function () {
+            $validation1 = V::valid();
+            $validation2 = V::valid();
+
+            expect($validation1->and(new StringConcatenationMonoid(), $validation2)->validate(42))
+                ->toBeEither(Either::right(42));
+        });
+    });
+
     describe('Basic validators', function () use ($test) {
 
         describe('hasKey', function () use ($test) {
@@ -678,7 +712,7 @@ describe('Validation', function () use ($test) {
                 $test->forAll(
                     new StringGenerator()
                 )->then(function (string $s) use ($validation) {
-                    expect($validation->validate($s))->toBeEither(Either::left(['not null', 'not an integer']));
+                    expect($validation->validate($s))->toBeEither(Either::left(['not an integer', 'not null']));
                 });
             });
 

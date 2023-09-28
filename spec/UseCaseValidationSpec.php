@@ -113,7 +113,7 @@ describe('Use Case Validation Spec', function () {
             yield ['Invalidate TIN number having invalid pattern', 'wwwwwwwwwww', Either::left(['TIN pattern is invalid.'])];
             yield ['Invalidate TIN number having invalid date', '81023011101', Either::left(['TIN date is invalid.'])];
             yield ['Validate TIN number', '01062624339', Either::right('01062624339')];
-            yield ['Invalidate TIN number', '81092499999', Either::left(['TIN validation of rule 2 failed.', 'TIN validation of rule 1 failed.'])];
+            yield ['Invalidate TIN number', '81092499999', Either::left(['TIN validation of rule 1 failed.', 'TIN validation of rule 2 failed.'])];
         };
 
         foreach ($testCases() as list($testCase, $tinNumber, $expected)) {

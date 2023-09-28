@@ -11,6 +11,8 @@ use Marcosh\LamPHPda\Brand\ListBrand;
 use Marcosh\LamPHPda\Either;
 use Marcosh\LamPHPda\HK\HK1;
 use Marcosh\LamPHPda\HK\HK2;
+use Marcosh\LamPHPda\Instances\FirstSemigroup;
+use Marcosh\LamPHPda\Instances\OppositeMonoid;
 use Marcosh\LamPHPda\Instances\Either\EitherFunctor;
 use Marcosh\LamPHPda\Instances\Either\ValidationApplicative;
 use Marcosh\LamPHPda\Instances\ListL\ConcatenationMonoid;
@@ -176,6 +178,20 @@ final class Validation implements DefaultProfunctor, HK1
     public function or(Semigroup $eSemigroup, Validation $that): self
     {
         return (new ValidationAlt($eSemigroup))->alt($this, $that);
+    }
+
+    /**
+     * @param Validation<A, E, B> $that
+     * @return Validation<A, E, B>
+     */
+    public function and(Semigroup $eSemigroup, Validation $that): self
+    {
+        /** @psalm-suppress ImpureMethodCall */
+        return self::all(
+            $eSemigroup,
+            new FirstSemigroup(),
+            [$this, $that]
+        );
     }
 
     // TRIVIAL COMBINATORS
@@ -507,7 +523,7 @@ final class Validation implements DefaultProfunctor, HK1
         /** @var Validation<array, F, array<K, mixed>> $keysValidator */
         $keysValidator = self::all(
             $eSemigroup,
-            new ConcatenationMonoid(),
+            new OppositeMonoid(new ConcatenationMonoid()),
             array_map(
                 /**
                  * @param K $key
@@ -604,9 +620,7 @@ final class Validation implements DefaultProfunctor, HK1
                      * @param M $m
                      * @return D
                      */
-                    function ($m) use ($c, $lens) {
-                        return $lens->set($c, $m);
-                    }
+                    fn ($m) => $lens->set($c, $m)
                 );
             }
         );
