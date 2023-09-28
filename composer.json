@@ -12,7 +12,7 @@
   ],
   "require": {
     "php": "^7.4|^8.0",
-    "marcosh/lamphpda": "^1.4",
+    "marcosh/lamphpda": "^1.4.1",
     "giorgiosironi/eris": "^0.12.1",
     "marcosh/lamphpda-optics": "dev-master"
   },
