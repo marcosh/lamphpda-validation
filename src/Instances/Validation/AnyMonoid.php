@@ -38,7 +38,7 @@ final class AnyMonoid implements Monoid
     /**
      * @return Validation<A, E, B>
      */
-    public function mempty()
+    public function mempty(): Validation
     {
         return Validation::invalid($this->eMonoid->mempty());
     }
@@ -48,7 +48,7 @@ final class AnyMonoid implements Monoid
      * @param Validation<A, E, B> $b
      * @return Validation<A, E, B>
      */
-    public function append($a, $b)
+    public function append($a, $b): Validation
     {
         return (new ValidationSemigroup(new MeetEitherSemigroup($this->eMonoid, $this->bSemigroup)))->append($a, $b);
     }

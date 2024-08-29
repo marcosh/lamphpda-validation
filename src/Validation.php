@@ -132,6 +132,7 @@ final class Validation implements DefaultProfunctor, HK1
      */
     public function validate($a): Either
     {
+        /** @psalm-suppress ImpureFunctionCall */
         return ($this->validation)($a);
     }
 
