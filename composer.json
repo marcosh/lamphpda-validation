@@ -11,10 +11,10 @@
     }
   ],
   "require": {
-    "php": "^7.4|^8.0",
-    "marcosh/lamphpda": "^1.4.1",
-    "giorgiosironi/eris": "^0.12.1",
-    "marcosh/lamphpda-optics": "dev-master"
+    "php": "^8.1",
+    "marcosh/lamphpda": "^3.1.1",
+    "giorgiosironi/eris": "^1.0.0-rc2",
+    "marcosh/lamphpda-optics": "^0.1"
   },
   "autoload": {
     "psr-4": {
@@ -27,9 +27,9 @@
     }
   },
   "require-dev": {
-    "maglnet/composer-require-checker": "^3.5",
-    "kahlan/kahlan": "^5.1",
-    "squizlabs/php_codesniffer": "^3.6",
-    "vimeo/psalm": "^4.14"
+    "maglnet/composer-require-checker": "^3.8",
+    "kahlan/kahlan": "^5.2",
+    "squizlabs/php_codesniffer": "^3.10",
+    "vimeo/psalm": "^4.30"
   }
 }
